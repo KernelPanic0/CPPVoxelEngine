@@ -73,11 +73,9 @@ int main()
     // shader in char array
     const char* vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
-        "out vec4 vertexColor;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "   vertexColor = vec4(1.0f, 0.5f, 0.2f, 1.0); \n"
         "}\0";
 
     // create shader object
@@ -100,33 +98,20 @@ int main()
 
     const char* fragmentShaderSource = "#version 330 core\n"
         "out vec4 FragColor;\n"
-        "in vec4 vertexColor;\n"
+        "uniform vec4 color;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vertexColor;\n"
+        "   FragColor = color;\n"
         "}\0";
 
-    const char* fragmentShaderSource2 = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "in vec4 vertexColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vertexColor;\n"
-        "}\0";
-
-    unsigned int fragmentShader, fragmentShader2;
+    unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
 
-    fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader2, 1, &fragmentShaderSource2, NULL);
-    glCompileShader(fragmentShader2);
-
     // Create shader program to link the two shaders
-    unsigned int shaderProgram, shaderProgram2;
+    unsigned int shaderProgram;
     shaderProgram = glCreateProgram();
-    shaderProgram2 = glCreateProgram();
 
     // Attach vertex shader first, then fragment shader
     glAttachShader(shaderProgram, vertexShader);
@@ -134,11 +119,6 @@ int main()
 
     // Link
     glLinkProgram(shaderProgram);
-
-    glAttachShader(shaderProgram2, vertexShader);
-    glAttachShader(shaderProgram2, fragmentShader2);
-
-    glLinkProgram(shaderProgram2);
 
     // Check for errors
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
@@ -203,12 +183,15 @@ int main()
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f; // map outputs of sin to be between 0 and 1
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "color");
         glUseProgram(shaderProgram);
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         //glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        glUseProgram(shaderProgram2);
         glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
