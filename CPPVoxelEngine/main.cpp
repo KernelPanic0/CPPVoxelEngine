@@ -38,16 +38,18 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    float vertices_1[] = {
-         -0.5f, -0.5f, 0.0f,  // bottom left
-         0.0f, -0.5f, 0.0f,  // bottom right
-        -0.25f, 0.5f, 0.0f  // top
+    float vertices_1[] = { // 2 vertex attributes
+        // positions         // colors
+         -1.0f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+         0.0f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+         -0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
     };
 
-    float vertices_2[] = {
-         0.0f, -0.5f, 0.0f,  // bottom left
-         0.5f, -0.5f, 0.0f,  // bottom right
-        0.25f, 0.5f, 0.0f  // top
+    float vertices_2[] = { // 2 vertex attributes
+        // positions         // colors
+         0.0f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+         1.0f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+         0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
     };
 
     unsigned int indices[] = {  // note that we start from 0!
@@ -73,9 +75,12 @@ int main()
     // shader in char array
     const char* vertexShaderSource = "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+        "layout (location = 1) in vec3 color;\n"
+        "out vec3 aColor;\n"
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "   aColor = color;\n"
         "}\0";
 
     // create shader object
@@ -98,10 +103,10 @@ int main()
 
     const char* fragmentShaderSource = "#version 330 core\n"
         "out vec4 FragColor;\n"
-        "uniform vec4 color;\n"
+        "in vec3 aColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = color;\n"
+        "   FragColor = vec4(aColor, 1.0);\n"
         "}\0";
 
     unsigned int fragmentShader;
@@ -161,17 +166,19 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_1), vertices_1, GL_STATIC_DRAW);
 
     // 3. then set our vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(VAO2);
     glBindBuffer(GL_ARRAY_BUFFER, VBO2);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_2), vertices_2, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(0);
-
-
+    glEnableVertexAttribArray(1);
 
     while (!glfwWindowShouldClose(window))
     {
