@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "shader_util.h"
 
 #include <iostream>
 
