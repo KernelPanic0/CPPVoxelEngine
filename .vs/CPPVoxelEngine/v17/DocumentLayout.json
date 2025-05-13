@@ -7,12 +7,12 @@
       "RelativeMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|solutionrelative:CPPVoxelEngine\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|solutionrelative:CPPVoxelEngine\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.frag||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|solutionrelative:CPPVoxelEngine\\shader.frag||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|solutionrelative:CPPVoxelEngine\\shader.vert||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{631C9035-FF61-478F-AB9A-205E4DE84FD0}|CPPVoxelEngine\\CPPVoxelEngine.vcxproj|C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\stb_image.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -52,33 +52,33 @@
               "RelativeDocumentMoniker": "CPPVoxelEngine\\main.cpp",
               "ToolTip": "C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\main.cpp",
               "RelativeToolTip": "CPPVoxelEngine\\main.cpp",
-              "ViewState": "AgIAAHIAAAAAAAAAAAAAAHQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAKMAAAAAAAAAAAAAAKsAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-05-11T17:50:19.665Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "shader.frag",
               "DocumentMoniker": "C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.frag",
               "RelativeDocumentMoniker": "CPPVoxelEngine\\shader.frag",
               "ToolTip": "C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.frag",
               "RelativeToolTip": "CPPVoxelEngine\\shader.frag",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAtAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-05-11T19:52:15.803Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "shader.vert",
               "DocumentMoniker": "C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.vert",
               "RelativeDocumentMoniker": "CPPVoxelEngine\\shader.vert",
               "ToolTip": "C:\\Users\\05112\\source\\repos\\CPPVoxelEngine\\CPPVoxelEngine\\shader.vert",
               "RelativeToolTip": "CPPVoxelEngine\\shader.vert",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2025-05-11T16:52:35.101Z",
               "EditorCaption": ""
