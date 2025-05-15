@@ -7,14 +7,53 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "PerlinNoise.hpp"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+unsigned int SCR_WIDTH = 800;
+unsigned int SCR_HEIGHT = 600;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
+float lastX = 400, lastY = 300; // Mouse pos
+
+float yaw, pitch;
+
+unsigned int fps = 0;
+float lastCalculated = 1.0f;
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+    lastX = xpos;
+    lastY = ypos;
+
+    const float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f)
+        pitch = 89.0f;
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+}
 
 int main()
 {
@@ -27,7 +66,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "the", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "The game", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -56,47 +95,48 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+     // Sides
+    -0.5f, -0.5f, -0.5f,  0.5f, 0.25f, // 1 bottom right
+     0.5f, -0.5f, -0.5f,  0.25f, 0.25f, // 1 bottom left
+     0.5f,  0.5f, -0.5f,  0.25f, 0.75f, // 1 top left
+     0.5f,  0.5f, -0.5f,  0.25f, 0.75f, // 2 top left
+    -0.5f,  0.5f, -0.5f,  0.5f, 0.75f, // 2 top right
+    -0.5f, -0.5f, -0.5f,  0.5f, 0.25f, // 2 bottom right
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.5f, 0.25f, 
+     0.5f, -0.5f,  0.5f,  0.25f, 0.25f,
+     0.5f,  0.5f,  0.5f,  0.25f, 0.75f,
+     0.5f,  0.5f,  0.5f,  0.25f, 0.75f,
+    -0.5f,  0.5f,  0.5f,  0.5f, 0.75f, 
+    -0.5f, -0.5f,  0.5f,  0.5f, 0.25f, 
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.25f, 0.75f,  // 1 top right (1 top left)
+    -0.5f,  0.5f, -0.5f,  0.5f, 0.75f, // 1 bottom right (1 top right)
+    -0.5f, -0.5f, -0.5f,  0.5f, 0.25f, // 1 bottom left (1 bottom right)
+    -0.5f, -0.5f, -0.5f,  0.5f, 0.25f, // 2 bottom left (2 bottom right)
+    -0.5f, -0.5f,  0.5f,  0.25f, 0.25f, // 2 top left (2 bottom left)
+    -0.5f,  0.5f,  0.5f,  0.25f, 0.75f, // 2 top right (1 top left)
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+     0.5f,  0.5f,  0.5f,  0.5f,  0.75f,
+     0.5f,  0.5f, -0.5f,  0.25f, 0.75f, 
+     0.5f, -0.5f, -0.5f,  0.25f, 0.25f,  // wrong
+     0.5f, -0.5f, -0.5f,  0.25f, 0.25f, 
+     0.5f, -0.5f,  0.5f,  0.5f,  0.25f,
+     0.5f,  0.5f,  0.5f,  0.5f,  0.75f,
+    // Bottom
+    -0.5f, -0.5f, -0.5f,  0.25f, 0.0f, // 1 bottom left
+     0.5f, -0.5f, -0.5f,  0.25f, 0.25f, // 1 top left
+     0.5f, -0.5f,  0.5f,  0.5f, 0.25f, // 1 top right 
+     0.5f, -0.5f,  0.5f,  0.5f, 0.25f, // 2 top right 
+    -0.5f, -0.5f,  0.5f,  0.5f, 0.0f, // 2 bottom right
+    -0.5f, -0.5f, -0.5f,  0.25f, 0.0f, // bottom left
+    // Top
+    -0.5f,  0.5f, -0.5f,  0.25f, 0.75, // 1 bottom left
+     0.5f,  0.5f, -0.5f,  0.25f, 1.0f, // 1 top left
+     0.5f,  0.5f,  0.5f,  0.5f, 1.0f, // 1 top right
+     0.5f,  0.5f,  0.5f,  0.5f, 1.0f, // 2 top right
+    -0.5f,  0.5f,  0.5f,  0.5f, 0.75f, // 2 bottom right
+    -0.5f,  0.5f, -0.5f,  0.25f, 0.75, // 2 bottom left
     };
 
     unsigned int indices[] = {
@@ -109,6 +149,10 @@ int main()
     1.0f, 0.0f,  // lower-right corner
     0.5f, 1.0f   // top-center corner
     };
+
+    const siv::PerlinNoise::seed_type seed = 123456u;
+
+	const siv::PerlinNoise perlin{ seed };
 
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -132,7 +176,7 @@ int main()
     
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("apostol.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("./grass.jpg", &width, &height, &nrChannels, 0);
 
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -156,8 +200,14 @@ int main()
     // note that we're translating the scene in the reverse direction of where we want to move
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // render loop
     glEnable(GL_DEPTH_TEST);
@@ -168,31 +218,85 @@ int main()
         // -----
         processInput(window);
 
+
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        if (currentFrame - lastCalculated >= 1.0f) {
+            lastCalculated = currentFrame;
+           std::string str = (std::string)"The game FPS: " + std::to_string(fps);
+
+            glfwSetWindowTitle(window, str.c_str());
+            fps = 0;
+        }
+        else {
+            fps++;
+        }
+
+        // get viewport properties
+        GLint m_viewport[4];
+
+        glGetIntegerv(GL_VIEWPORT, m_viewport);
+
+        SCR_WIDTH = m_viewport[2]; 
+        SCR_HEIGHT = m_viewport[3];
+
+
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-        // render the rectangle
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(0.001f), glm::vec3(0.5f, 1.0f, 0.0f));
-
-        glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-
-        int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-        int viewLoc = glGetUniformLocation(ourShader.ID, "view");
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-        int projLoc = glGetUniformLocation(ourShader.ID, "projection");
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-
+        // bind textures on corresponding texture units
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture);
+
+        // activate shader
         ourShader.use();
+
+        // create transformations
+        glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(65.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
+
+        const float radius = 10.0f;
+        float camX = sin(glfwGetTime() / 5) * radius;
+        float camZ = cos(glfwGetTime() / 5) * radius;
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+        // pass transformation matrices to the shader
+        ourShader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        ourShader.setMat4("view", view);
+
+        // render boxes
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 200; i++)
+        {
+            for (unsigned int i2 = 0; i2 < 200; i2++) {
+                // calculate the model matrix for each object and pass it to shader before drawing
+                glm::mat4 model = glm::mat4(1.0f);
+                const double noise = perlin.octave2D_01((i * 0.01), (i2 * 0.01), 4);
+                int yTransform = (int)-2.0f * noise * 30;
+                model = glm::translate(model, glm::vec3((float)i, yTransform, (float)i2));
+                ourShader.setMat4("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+        }
+
+        // This is in place to fix the issue of holes being in terrain when there is a 2 block tall structure
+        for (unsigned int i = 0; i < 200; i++)
+        {
+            for (unsigned int i2 = 0; i2 < 200; i2++) {
+                // calculate the model matrix for each object and pass it to shader before drawing
+                glm::mat4 model = glm::mat4(1.0f);
+                const double noise = perlin.octave2D_01((i * 0.01), (i2 * 0.01), 4);
+                int yTransform = (int)-2.0f * noise * 30;
+                model = glm::translate(model, glm::vec3((float)i, yTransform-1, (float)i2));
+                ourShader.setMat4("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -217,6 +321,17 @@ void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+
+        const float cameraSpeed = 15.05f * deltaTime; // adjust accordingly
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -227,4 +342,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-

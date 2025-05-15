@@ -40,5 +40,8 @@
     <ClInclude Include="..\includes\glad\glad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="shader_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
