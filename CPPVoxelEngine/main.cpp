@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include "shader_util.h"
 #include "stb_image.h"
+#include <random>
 // glm
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,12 +11,17 @@
 #include "PerlinNoise.hpp"
 #include <iostream>
 
+#include <time.h>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY);
 
 // settings
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
+
+#define CHUNK_SIZE 16
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -66,7 +72,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "The game", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CPP Voxel Engine", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -90,7 +96,7 @@ int main()
     // build and compile our shader program
     // ------------------------------------
 
-    Shader ourShader("shader.vert", "shader.frag"); // you can name your shader files however you like
+    Shader shaderProgram("shader.vert", "shader.frag"); // you can name your shader files however you like
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -150,7 +156,11 @@ int main()
     0.5f, 1.0f   // top-center corner
     };
 
-    const siv::PerlinNoise::seed_type seed = 123456u;
+
+    std::random_device rd;
+    const siv::PerlinNoise::seed_type seed = rd();
+
+    std::cout << seed << std::endl;
 
 	const siv::PerlinNoise perlin{ seed };
 
@@ -225,7 +235,7 @@ int main()
 
         if (currentFrame - lastCalculated >= 1.0f) {
             lastCalculated = currentFrame;
-           std::string str = (std::string)"The game FPS: " + std::to_string(fps);
+           std::string str = (std::string)"CPP Voxel Engine FPS: " + std::to_string(fps);
 
             glfwSetWindowTitle(window, str.c_str());
             fps = 0;
@@ -253,7 +263,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture);
 
         // activate shader
-        ourShader.use();
+        shaderProgram.use();
 
         // create transformations
         glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -266,37 +276,38 @@ int main()
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         // pass transformation matrices to the shader
-        ourShader.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-        ourShader.setMat4("view", view);
+        shaderProgram.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        shaderProgram.setMat4("view", view);
 
-        // render boxes
+        // render ubes
+        double noise;
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 200; i++)
         {
             for (unsigned int i2 = 0; i2 < 200; i2++) {
                 // calculate the model matrix for each object and pass it to shader before drawing
                 glm::mat4 model = glm::mat4(1.0f);
-                const double noise = perlin.octave2D_01((i * 0.01), (i2 * 0.01), 4);
+                noise = perlin.octave2D_01((i * 0.01), (i2 * 0.01), 4);
                 int yTransform = (int)-2.0f * noise * 30;
                 model = glm::translate(model, glm::vec3((float)i, yTransform, (float)i2));
-                ourShader.setMat4("model", model);
+                shaderProgram.setMat4("model", model);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
             }
         }
 
         // This is in place to fix the issue of holes being in terrain when there is a 2 block tall structure
-        for (unsigned int i = 0; i < 200; i++)
-        {
-            for (unsigned int i2 = 0; i2 < 200; i2++) {
-                // calculate the model matrix for each object and pass it to shader before drawing
-                glm::mat4 model = glm::mat4(1.0f);
-                const double noise = perlin.octave2D_01((i * 0.01), (i2 * 0.01), 4);
-                int yTransform = (int)-2.0f * noise * 30;
-                model = glm::translate(model, glm::vec3((float)i, yTransform-1, (float)i2));
-                ourShader.setMat4("model", model);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-            }
-        }
+        //for (unsigned int i = 0; i < 200; i++)
+        //{
+        //    for (unsigned int i2 = 0; i2 < 200; i2++) {
+        //        // calculate the model matrix for each object and pass it to shader before drawing
+        //        glm::mat4 model = glm::mat4(1.0f);
+        //        std::cout << noise << std::endl;
+        //        int yTransform = (int)-2.0f * noise * 30;
+        //        model = glm::translate(model, glm::vec3((float)i, yTransform-1, (float)i2));
+        //        shaderProgram.setMat4("model", model);
+        //        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //    }
+        //}
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -313,6 +324,20 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY) {
+    for (int x = 0; x < CHUNK_SIZE; x++) {
+        for (int y = 0; y < CHUNK_SIZE; y++) {
+            // calculate the model matrix for each object and pass it to shader before drawing
+            glm::mat4 model = glm::mat4(1.0f);
+            double noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 4);
+            int yTransform = (int)-2.0f * noise * 30;
+            model = glm::translate(model, glm::vec3((float)x, yTransform, (float)y));
+            ourShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
