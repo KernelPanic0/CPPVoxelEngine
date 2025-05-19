@@ -125,7 +125,7 @@ int main()
 
      0.5f,  0.5f,  0.5f,  0.5f,  0.75f,
      0.5f,  0.5f, -0.5f,  0.25f, 0.75f, 
-     0.5f, -0.5f, -0.5f,  0.25f, 0.25f,  // wrong
+     0.5f, -0.5f, -0.5f,  0.25f, 0.25f, 
      0.5f, -0.5f, -0.5f,  0.25f, 0.25f, 
      0.5f, -0.5f,  0.5f,  0.5f,  0.25f,
      0.5f,  0.5f,  0.5f,  0.5f,  0.75f,
@@ -282,32 +282,13 @@ int main()
         // render ubes
         double noise;
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 200; i++)
-        {
-            for (unsigned int i2 = 0; i2 < 200; i2++) {
-                // calculate the model matrix for each object and pass it to shader before drawing
-                glm::mat4 model = glm::mat4(1.0f);
-                noise = perlin.octave2D_01((i * 0.01), (i2 * 0.01), 4);
-                int yTransform = (int)-2.0f * noise * 30;
-                model = glm::translate(model, glm::vec3((float)i, yTransform, (float)i2));
-                shaderProgram.setMat4("model", model);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // Draw Chunks
+        for (unsigned int x = 1; x < 15; x++) {
+            for (unsigned int y = 1; y < 15; y++) {
+                drawChunks(perlin, shaderProgram, x, y);
             }
         }
-
-        // This is in place to fix the issue of holes being in terrain when there is a 2 block tall structure
-        //for (unsigned int i = 0; i < 200; i++)
-        //{
-        //    for (unsigned int i2 = 0; i2 < 200; i2++) {
-        //        // calculate the model matrix for each object and pass it to shader before drawing
-        //        glm::mat4 model = glm::mat4(1.0f);
-        //        std::cout << noise << std::endl;
-        //        int yTransform = (int)-2.0f * noise * 30;
-        //        model = glm::translate(model, glm::vec3((float)i, yTransform-1, (float)i2));
-        //        shaderProgram.setMat4("model", model);
-        //        glDrawArrays(GL_TRIANGLES, 0, 36);
-        //    }
-        //}
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -331,9 +312,9 @@ void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int
         for (int y = 0; y < CHUNK_SIZE; y++) {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
-            double noise = perlin.octave2D_01((x * 0.01), (y * 0.01), 4);
+            double noise = perlin.octave2D_01(((x+CHUNK_SIZE*chunkX) * 0.01), ((y+CHUNK_SIZE*chunkY) * 0.01), 4);
             int yTransform = (int)-2.0f * noise * 30;
-            model = glm::translate(model, glm::vec3((float)x, yTransform, (float)y));
+            model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(y+CHUNK_SIZE*chunkY)));
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
