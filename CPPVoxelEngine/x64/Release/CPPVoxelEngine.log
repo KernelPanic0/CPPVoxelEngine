@@ -1,13 +1,15 @@
 ﻿  main.cpp
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(40,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(41,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(42,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(42,19): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(43,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(232,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(274,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(275,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(283,16): warning C4101: 'noise': unreferenced local variable
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(330,28): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(44,13): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(235,28): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(277,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(278,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(296,36): warning C4018: '<': signed/unsigned mismatch
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(297,40): warning C4018: '<': signed/unsigned mismatch
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(286,16): warning C4101: 'noise': unreferenced local variable
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(326,28): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   Generating code
   1 of 499 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation

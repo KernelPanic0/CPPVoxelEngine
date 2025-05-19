@@ -3,6 +3,7 @@
 #include "shader_util.h"
 #include "stb_image.h"
 #include <random>
+#include <unordered_map>
 // glm
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
@@ -38,7 +39,7 @@ float lastCalculated = 1.0f;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates range from bottom to top
+    float yoffset = lastY - ypos; // reversed since z-coordinates range from bottom to top
     lastX = xpos;
     lastY = ypos;
 
@@ -222,6 +223,8 @@ int main()
     // render loop
     glEnable(GL_DEPTH_TEST);
     // -----------
+    int xChunks = 15, zChunks = 15;
+
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -284,12 +287,18 @@ int main()
         glBindVertexArray(VAO);
 
         // Draw Chunks
-        for (unsigned int x = 1; x < 15; x++) {
-            for (unsigned int y = 1; y < 15; y++) {
-                drawChunks(perlin, shaderProgram, x, y);
+        if (cameraPos.x / xChunks >= (CHUNK_SIZE - 5)) {
+            xChunks += 5;
+        }
+        else if (cameraPos.z / zChunks >= (CHUNK_SIZE - 5)) {
+            zChunks += 5;
+        }
+        for (unsigned int x = 1; x < xChunks; x++) {
+            for (unsigned int z = 1; z < zChunks; z++) {
+                drawChunks(perlin, shaderProgram, x, z);
             }
         }
-
+        std::cout << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z << std::endl;
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -307,14 +316,15 @@ int main()
     return 0;
 }
 
-void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY) {
+// Maybe in the future optimize all these calculations with caching (unordered map ?)
+void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkZ) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
-        for (int y = 0; y < CHUNK_SIZE; y++) {
+        for (int z = 0; z < CHUNK_SIZE; z++) {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
-            double noise = perlin.octave2D_01(((x+CHUNK_SIZE*chunkX) * 0.01), ((y+CHUNK_SIZE*chunkY) * 0.01), 4);
+            double noise = perlin.octave2D_01(((x+CHUNK_SIZE*chunkX) * 0.01), ((z+CHUNK_SIZE*chunkZ) * 0.01), 4);
             int yTransform = (int)-2.0f * noise * 30;
-            model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(y+CHUNK_SIZE*chunkY)));
+            model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(z+CHUNK_SIZE*chunkZ)));
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
