@@ -16,7 +16,7 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
-void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY);
+void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY, unsigned int snowTextureId, unsigned int grassTextureId);
 
 // settings
 unsigned int SCR_WIDTH = 800;
@@ -99,7 +99,7 @@ int main()
 
     Shader shaderProgram("shader.vert", "shader.frag"); // you can name your shader files however you like
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // set up vertex grassTextureData (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
      // Sides
@@ -181,28 +181,43 @@ int main()
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // texture coord attribute
+    // grassTexture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load("./grass.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* grassTextureData = stbi_load("./grass.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* snowTextureData = stbi_load("./snow.png", &width, &height, &nrChannels, 0);
 
-    unsigned int texture;
-    glGenTextures(1, &texture);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
+    unsigned int grassTexture, snowTexture;
+    glGenTextures(1, &grassTexture);
+    glGenTextures(1, &snowTexture);
+
+
+    glBindTexture(GL_TEXTURE_2D, grassTexture);
     // set wrapping / filtering options
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, grassTextureData);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    stbi_image_free(data);
+    glBindTexture(GL_TEXTURE_2D, snowTexture);
+    // set wrapping / filtering options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, snowTextureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(grassTextureData);
+    stbi_image_free(snowTextureData);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -258,12 +273,12 @@ int main()
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.5843f, 0.7922f, 0.9882f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
 
-        // bind textures on corresponding texture units
+        // bind textures on corresponding grassTexture units
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glBindTexture(GL_TEXTURE_2D, grassTexture);
 
         // activate shader
         shaderProgram.use();
@@ -287,15 +302,17 @@ int main()
         glBindVertexArray(VAO);
 
         // Draw Chunks
-        if (cameraPos.x / xChunks >= (CHUNK_SIZE - 5)) {
-            xChunks += 5;
-        }
-        else if (cameraPos.z / zChunks >= (CHUNK_SIZE - 5)) {
-            zChunks += 5;
-        }
-        for (unsigned int x = 1; x < xChunks; x++) {
-            for (unsigned int z = 1; z < zChunks; z++) {
-                drawChunks(perlin, shaderProgram, x, z);
+        int currentChunkX = static_cast<int>(std::floor(cameraPos.x / CHUNK_SIZE));
+        int currentChunkZ = static_cast<int>(std::floor(cameraPos.z / CHUNK_SIZE));
+
+        const int renderDistance = 10; // chunks in each direction
+
+        for (int dx = -renderDistance; dx <= renderDistance; dx++) {
+            for (int dz = -renderDistance; dz <= renderDistance; dz++) {
+                int chunkX = currentChunkX + dx;
+                int chunkZ = currentChunkZ + dz;
+
+                drawChunk(perlin, shaderProgram, chunkX, chunkZ, snowTexture, grassTexture);
             }
         }
         std::cout << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z << std::endl;
@@ -316,14 +333,23 @@ int main()
     return 0;
 }
 
-// Maybe in the future optimize all these calculations with caching (unordered map ?)
-void drawChunks(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkZ) {
+// Maybe in the future optimize all these calculations with caching (unordered map ?) 
+// These params for grass and snow texture are currently awful but I will fix it 
+void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkZ, unsigned int snowTextureId, unsigned int grassTextureId) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int z = 0; z < CHUNK_SIZE; z++) {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
             double noise = perlin.octave2D_01(((x+CHUNK_SIZE*chunkX) * 0.01), ((z+CHUNK_SIZE*chunkZ) * 0.01), 4);
             int yTransform = (int)-2.0f * noise * 30;
+            if (yTransform >= -12) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, snowTextureId);
+            }
+            else {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, grassTextureId);
+            }
             model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(z+CHUNK_SIZE*chunkZ)));
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
