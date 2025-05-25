@@ -1,9 +1,16 @@
+// imgui
+#include "imconfig.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "imgui.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader_util.h"
 #include "stb_image.h"
 #include <random>
 #include <unordered_map>
+
 // glm
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,7 +22,7 @@
 #include <time.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, bool* showUi);
 void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY, unsigned int snowTextureId, unsigned int grassTextureId);
 
 // settings
@@ -83,8 +90,21 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330"); // Use your shader version
+    ImGui::StyleColorsDark();
+
+    // ImGUI State
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -242,9 +262,34 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        glfwPollEvents();
+        // ImGui
+
+      /*  if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
+        {
+            ImGui_ImplGlfw_Sleep(10);
+            continue;
+        }*/
+
+        processInput(window, &show_demo_window);
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        // ImGui rendering
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         // input
         // -----
-        processInput(window);
 
 
         float currentFrame = glfwGetTime();
@@ -315,11 +360,11 @@ int main()
                 drawChunk(perlin, shaderProgram, chunkX, chunkZ, snowTexture, grassTexture);
             }
         }
-        std::cout << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z << std::endl;
+        //std::cout << cameraPos.x << ", " << cameraPos.y << ", " << cameraPos.z << std::endl;
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
@@ -359,12 +404,12 @@ void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int 
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, bool* showUi)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-
+    // Movement
         const float cameraSpeed = 15.05f * deltaTime; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
@@ -374,6 +419,22 @@ void processInput(GLFWwindow* window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+
+    // Cant believe I have to do this and GLFW doesnt have an implementation for this
+    static bool lastRightShiftState = false;
+
+    bool currentRightShiftState = glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
+    if (currentRightShiftState && !lastRightShiftState)
+    {
+        *showUi = !*showUi;
+    }
+    lastRightShiftState = currentRightShiftState;
+    if (*showUi == true) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

@@ -104,13 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\include;C:\Users\05112\source\repos\CPPVoxelEngine\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\include;C:\Users\05112\source\repos\CPPVoxelEngine\includes\imgui;C:\Users\05112\source\repos\CPPVoxelEngine\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\glad;C:\Users\05112\source\repos\CPPVoxelEngine\includes\KHR;C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\imgui;C:\Users\05112\source\repos\CPPVoxelEngine\includes\glad;C:\Users\05112\source\repos\CPPVoxelEngine\includes\KHR;C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\include;C:\Users\05112\source\repos\CPPVoxelEngine\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\include;C:\Users\05112\source\repos\CPPVoxelEngine\includes\imgui;C:\Users\05112\source\repos\CPPVoxelEngine\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -130,12 +130,19 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\glad;C:\Users\05112\source\repos\CPPVoxelEngine\includes\KHR;C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\05112\source\repos\CPPVoxelEngine\includes\imgui;C:\Users\05112\source\repos\CPPVoxelEngine\includes\glad;C:\Users\05112\source\repos\CPPVoxelEngine\includes\KHR;C:\Users\05112\source\repos\CPPVoxelEngine\includes\glfw-3.4.bin.WIN64\lib-vc2022;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;user32.lib;gdi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\includes\glad\glad.c" />
+    <ClCompile Include="..\includes\imgui\imgui.cpp" />
+    <ClCompile Include="..\includes\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\includes\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\includes\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\includes\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\includes\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\includes\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
@@ -145,6 +152,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\includes\glad\glad.h" />
+    <ClInclude Include="..\includes\imgui\imconfig.h" />
+    <ClInclude Include="..\includes\imgui\imgui.h" />
+    <ClInclude Include="..\includes\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="..\includes\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\includes\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\includes\imgui\imgui_internal.h" />
+    <ClInclude Include="..\includes\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\includes\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\includes\imgui\imstb_truetype.h" />
     <ClInclude Include="shader_util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
