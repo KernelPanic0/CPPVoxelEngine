@@ -7,10 +7,10 @@ C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(295,28): warn
 C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(337,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(338,20): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(346,16): warning C4101: 'noise': unreferenced local variable
-C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(389,28): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\Users\05112\source\repos\CPPVoxelEngine\CPPVoxelEngine\main.cpp(390,28): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   Generating code
-  1 of 2987 functions (<0.1%) were compiled, the rest were copied from previous compilation.
+  2 of 2987 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    118 functions had inline decision re-evaluated but remain unchanged
+    127 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   CPPVoxelEngine.vcxproj -> C:\Users\05112\source\repos\CPPVoxelEngine\x64\Release\CPPVoxelEngine.exe
