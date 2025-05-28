@@ -11,14 +11,14 @@
 #include <random>
 #include <unordered_map>
 
-// glm
+// glm / math
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <cmath>
 #include "PerlinNoise.hpp"
-#include <iostream>
 
+#include <iostream>
 #include <time.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -380,43 +380,16 @@ int main()
 
 // Maybe in the future optimize all these calculations with caching (unordered map ?) 
 // These params for grass and snow texture are currently awful but I will fix it 
+
+// Cant figure out solution for filling in gaps
 void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkZ, unsigned int snowTextureId, unsigned int grassTextureId) {
-    int previousTransform = -1;
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int z = 0; z < CHUNK_SIZE; z++) {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f);
             double noise = perlin.octave2D_01(((x+CHUNK_SIZE*chunkX) * 0.01), ((z+CHUNK_SIZE*chunkZ) * 0.01), 4);
             int yTransform = (int)-2.0f * noise * 30;
-            
-            std::cout << (previousTransform * -1 % yTransform * -1) << std::endl;
-            if ((previousTransform * -1 > yTransform * -1)) {
-                if ((previousTransform * -1 % yTransform * -1) > 1) {
-                    model = glm::translate(model, glm::vec3((float)(x + CHUNK_SIZE * chunkX), yTransform -1, (float)(z + CHUNK_SIZE * chunkZ)));
-                    ourShader.setMat4("model", model);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-            }
 
-            else {
-                if ((yTransform * -1 % previousTransform * -1) > 1) {
-                    model = glm::translate(model, glm::vec3((float)(x + CHUNK_SIZE * chunkX), yTransform -1, (float)(z + CHUNK_SIZE * chunkZ)));
-                    ourShader.setMat4("model", model);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-            }
-
-            previousTransform = yTransform;
-
-
-            if (yTransform >= -12) {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, snowTextureId);
-            }
-            else {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, grassTextureId);
-            }
             model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(z+CHUNK_SIZE*chunkZ)));
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
