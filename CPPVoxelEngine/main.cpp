@@ -393,6 +393,23 @@ void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int 
             model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(z+CHUNK_SIZE*chunkZ)));
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+
+            // Fix holes in terrain 
+            double nextNoiseX = perlin.octave2D_01(((x + 1 + CHUNK_SIZE * chunkX) * 0.01), ((z + CHUNK_SIZE * chunkZ) * 0.01), 4); // still y
+            double nextNoiseZ = perlin.octave2D_01(((x + CHUNK_SIZE * chunkX) * 0.01), ((z + 1 + CHUNK_SIZE * chunkZ) * 0.01), 4); // still y 
+
+            if (std::abs(nextNoiseX - yTransform) > 1) {
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3((float)(x + CHUNK_SIZE * chunkX), yTransform+1, (float)(z + CHUNK_SIZE * chunkZ)));
+                ourShader.setMat4("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
+            else if (std::abs(nextNoiseX - yTransform) > 1) {
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3((float)(x + CHUNK_SIZE * chunkX), yTransform + 1, (float)(z + CHUNK_SIZE * chunkZ)));
+                ourShader.setMat4("model", model);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
+            }
         }
     }
 }
