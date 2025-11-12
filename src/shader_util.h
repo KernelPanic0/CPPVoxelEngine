@@ -1,8 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "./includes/glad/glad.h"
-#include "./includes/glm/glm.hpp"
+#include "../includes/glad/glad.h"
+#include "../includes/glm/glm.hpp"
 
 #include <string>
 #include <fstream>

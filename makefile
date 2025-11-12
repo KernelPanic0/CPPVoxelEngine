@@ -1,13 +1,16 @@
 # === Makefile for voxel project ===
 
 CXX := g++
-CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui
+CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/
 LDFLAGS := -lglfw -lGL -ldl -lX11 -lpthread -lXrandr -lXi
 TARGET := voxel
 
-SRC := main.cpp \
+SRC := ./src/main.cpp \
     ./includes/glad/glad.c \
-    ./stb_image.cpp \
+    ./src/stb_image.cpp \
+    ./src/GLFW/Init.cpp \
+    ./src/Camera/Camera.cpp \
+    ./src/Input/Input.cpp \
     ./includes/imgui/imgui.cpp \
     ./includes/imgui/imgui_draw.cpp \
     ./includes/imgui/imgui_demo.cpp \

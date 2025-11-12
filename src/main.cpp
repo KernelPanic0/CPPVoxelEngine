@@ -1,26 +1,24 @@
 #include "./stb_image.h"
 #include <random>
 #include <unordered_map>
+#include "./misc/Settings.hpp"
+#include "./Camera/Camera.hpp"
 
 // glm / math
+#include "../includes/imgui/imconfig.h"
+#include "../includes/imgui/imgui_impl_glfw.h"
+#include "../includes/imgui/imgui_impl_opengl3.h"
+#include "../includes/imgui/imgui.h"
 
-#include "./includes/imgui/imconfig.h"
-#include "./includes/imgui/imgui_impl_glfw.h"
-#include "./includes/imgui/imgui_impl_opengl3.h"
-#include "./includes/imgui/imgui.h"
-
-#include "./includes/glad/glad.h"
+#include "../includes/glad/glad.h"
+#include "./GLFW/Init.hpp"
 #include <GLFW/glfw3.h>  // System-installed GLFW
 #include "./shader_util.h"
 
-#include "./includes/glad/glad.h"
-
-#include "./includes/glm/glm.hpp"
-#include "./includes/glm/gtc/matrix_transform.hpp"
-#include "./includes/glm/gtc/type_ptr.hpp"
-
-
-
+#include "Input/Input.hpp"
+#include "../includes/glm/glm.hpp"
+#include "../includes/glm/gtc/matrix_transform.hpp"
+#include "../includes/glm/gtc/type_ptr.hpp"
 
 #if defined(__linux__)
 
@@ -45,90 +43,40 @@
 #endif
 
 // imgui
-#include "./includes/imgui/imconfig.h"
+#include "../includes/imgui/imconfig.h"
 
 #include <cmath>
-#include "PerlinNoise.hpp"
+#include "../includes/PerlinNoise.hpp"
 
 #include <iostream>
 #include <time.h>
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window, bool* showUi);
 void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkY, unsigned int snowTextureId, unsigned int grassTextureId);
-
-// settings
-unsigned int SCR_WIDTH = 800;
-unsigned int SCR_HEIGHT = 600;
 
 #define CHUNK_SIZE 16
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
-float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
-float lastX = 400, lastY = 300; // Mouse pos
+// float lastX = 400, lastY = 300; // Mouse pos
 
-float yaw, pitch;
+// float yaw, pitch;
 
 unsigned int fps = 0;
 float lastCalculated = 1.0f;
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since z-coordinates range from bottom to top
-    lastX = xpos;
-    lastY = ypos;
 
-    const float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
-}
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow* window = Window().Init();
+    Camera camera({0.0f, 0.0f, 3.0f});
 
-    // glfw window creation
-    // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CPP Voxel Engine", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback); // Problematic function for ImGui not capturing mouse input
+    glfwSetWindowUserPointer(window, &camera);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-
+    
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330"); // Use your shader version
     ImGui::StyleColorsDark();
@@ -150,7 +98,7 @@ int main()
     // build and compile our shader program
     // ------------------------------------
 
-    Shader shaderProgram("shader.vert", "shader.frag"); // you can name your shader files however you like
+    Shader shaderProgram("./src/shader.vert", "./src/shader.frag"); // you can name your shader files however you like
 
     // set up vertex grassTextureData (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -205,9 +153,9 @@ int main()
     };
 
     float texCoords[] = {
-    0.0f, 0.0f,  // lower-left corner  
-    1.0f, 0.0f,  // lower-right corner
-    0.5f, 1.0f   // top-center corner
+        0.0f, 0.0f,  // lower-left corner  
+        1.0f, 0.0f,  // lower-right corner
+        0.5f, 1.0f   // top-center corner
     };
 
 
@@ -240,8 +188,8 @@ int main()
     
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* grassTextureData = stbi_load("./grass.jpg", &width, &height, &nrChannels, 0);
-    unsigned char* snowTextureData = stbi_load("./snow.png", &width, &height, &nrChannels, 0);
+    unsigned char* grassTextureData = stbi_load("./assets/grass.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* snowTextureData = stbi_load("./assets/snow.png", &width, &height, &nrChannels, 0);
 
 
     unsigned int grassTexture, snowTexture;
@@ -280,7 +228,7 @@ int main()
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
     glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
+    glm::vec3 cameraDirection = glm::normalize(camera.cameraPos - cameraTarget);
 
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
@@ -306,7 +254,7 @@ int main()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        processInput(window, &show_demo_window);
+        Input::processInput(window, &show_demo_window);
 
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
@@ -320,14 +268,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-// 
+        // 
         // input
         // -----
 
-        std::cout << io.WantCaptureMouse << std::endl;
-
         float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
+        Settings::deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
         if (currentFrame - lastCalculated >= 1.0f) {
@@ -346,9 +292,8 @@ int main()
 
         glGetIntegerv(GL_VIEWPORT, m_viewport);
 
-        SCR_WIDTH = m_viewport[2]; 
-        SCR_HEIGHT = m_viewport[3];
-
+        Settings::SCR_WIDTH = m_viewport[2]; 
+        Settings::SCR_HEIGHT = m_viewport[3];
 
         // render
         // ------
@@ -365,12 +310,12 @@ int main()
         // create transformations
         glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(65.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
+        projection = glm::perspective(glm::radians(65.0f), (float)Settings::SCR_WIDTH / (float)Settings::SCR_HEIGHT, 0.1f, 1000.0f);
 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime() / 5) * radius;
         float camZ = cos(glfwGetTime() / 5) * radius;
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        view = glm::lookAt(camera.cameraPos, camera.cameraPos + camera.cameraFront, camera.cameraUp);
 
         // pass transformation matrices to the shader
         shaderProgram.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
@@ -381,8 +326,8 @@ int main()
         glBindVertexArray(VAO);
 
         // Draw Chunks
-        int currentChunkX = static_cast<int>(std::floor(cameraPos.x / CHUNK_SIZE));
-        int currentChunkZ = static_cast<int>(std::floor(cameraPos.z / CHUNK_SIZE));
+        int currentChunkX = static_cast<int>(std::floor(camera.cameraPos.x / CHUNK_SIZE));
+        int currentChunkZ = static_cast<int>(std::floor(camera.cameraPos.z / CHUNK_SIZE));
 
         const int renderDistance = 10; // chunks in each direction
 
@@ -415,7 +360,6 @@ int main()
 // Maybe in the future optimize all these calculations with caching (unordered map ?) 
 // These params for grass and snow texture are currently awful but I will fix it 
 
-// Cant figure out solution for filling in gaps
 void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int chunkZ, unsigned int snowTextureId, unsigned int grassTextureId) {
     for (int x = 0; x < CHUNK_SIZE; x++) {
         for (int z = 0; z < CHUNK_SIZE; z++) {
@@ -450,44 +394,7 @@ void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int 
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, bool* showUi)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 
-    // Movement
-        const float cameraSpeed = 15.05f * deltaTime; // adjust accordingly
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-
-    // Cant believe I have to do this and GLFW doesnt have an implementation for this
-    static bool lastRightShiftState = false;
-
-    bool currentRightShiftState = glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-    if (currentRightShiftState && !lastRightShiftState)
-    {
-        *showUi = !*showUi;
-    }
-    lastRightShiftState = currentRightShiftState;
-    if (*showUi == true) {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    else {
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
-}
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
-}
