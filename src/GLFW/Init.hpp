@@ -10,8 +10,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 class Window {
 public:
     // Sets up callbacks and returns window pointer
-    GLFWwindow* Inlit();
+    GLFWwindow* Init();
+    Window();
     void SetCamera(Camera* camera);
+    GLFWwindow* window;
 private:
     Camera* camera = nullptr;
 };

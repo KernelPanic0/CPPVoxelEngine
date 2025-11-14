@@ -66,7 +66,8 @@ float lastCalculated = 1.0f;
 
 int main()
 {
-    GLFWwindow* window = Window().Init();
+    Window windowObj = Window();
+    GLFWwindow* window = windowObj.window;
     Camera camera({0.0f, 0.0f, 3.0f});
 
     glfwSetWindowUserPointer(window, &camera);
