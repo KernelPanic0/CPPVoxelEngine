@@ -11,7 +11,7 @@
 #include "../includes/imgui/imgui.h"
 
 #include "../includes/glad/glad.h"
-#include "./GLFW/Init.hpp"
+#include "./GLFW/Window.hpp"
 #include <GLFW/glfw3.h>  // System-installed GLFW
 #include "./shader_util.h"
 
@@ -153,13 +153,6 @@ int main()
         1, 2, 3  // second triangle
     };
 
-    float texCoords[] = {
-        0.0f, 0.0f,  // lower-left corner  
-        1.0f, 0.0f,  // lower-right corner
-        0.5f, 1.0f   // top-center corner
-    };
-
-
     std::random_device rd;
     const siv::PerlinNoise::seed_type seed = rd();
 
@@ -175,10 +168,10 @@ int main()
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
 
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
@@ -322,7 +315,7 @@ int main()
         shaderProgram.setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         shaderProgram.setMat4("view", view);
 
-        // render ubes
+        // render cubes
         double noise;
         glBindVertexArray(VAO);
 
@@ -372,10 +365,8 @@ void drawChunk(const siv::PerlinNoise perlin, Shader ourShader, int chunkX, int 
             model = glm::translate(model, glm::vec3((float)(x+CHUNK_SIZE*chunkX), yTransform, (float)(z+CHUNK_SIZE*chunkZ)));
             ourShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
-
             // Fix holes in terrain 
             double nextNoiseX = perlin.octave2D_01(((x + 1 + CHUNK_SIZE * chunkX) * 0.01), ((z + CHUNK_SIZE * chunkZ) * 0.01), 4); // still y
-            double nextNoiseZ = perlin.octave2D_01(((x + CHUNK_SIZE * chunkX) * 0.01), ((z + 1 + CHUNK_SIZE * chunkZ) * 0.01), 4); // still y 
 
             if (std::abs(nextNoiseX - yTransform) > 1) {
                 model = glm::mat4(1.0f);

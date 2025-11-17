@@ -8,7 +8,7 @@ TARGET := voxel
 SRC := ./src/main.cpp \
     ./includes/glad/glad.c \
     ./src/stb_image.cpp \
-    ./src/GLFW/Init.cpp \
+    ./src/GLFW/Window.cpp \
     ./src/Camera/Camera.cpp \
     ./src/Input/Input.cpp \
     ./includes/imgui/imgui.cpp \

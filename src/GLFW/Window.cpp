@@ -1,4 +1,4 @@
-#include "Init.hpp"
+#include "Window.hpp"
 #include "Camera/Camera.hpp"
 #include "Input/Input.hpp"
 #include <iostream>
