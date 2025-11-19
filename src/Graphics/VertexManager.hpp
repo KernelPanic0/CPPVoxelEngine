@@ -35,70 +35,29 @@ class VertexArray {
 public:
     GLuint id;
 
-    VertexArray() { // Create a new VBO, bind to it and insert data into it
-        glGenVertexArrays(1, &id);
-        glBindVertexArray(id);
-    }
-
-    ~VertexArray() {
-        glDeleteVertexArrays(1, &id);
-    }
-
-    void bind() const {
-        glBindVertexArray(id);
-    }
-
-    void unbind() const {
-        glBindVertexArray(0);
-    }
-
-    void addAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* offset) {
-        glVertexAttribPointer(index, size, type, normalized, stride, offset);
-    }
+    VertexArray();
+    ~VertexArray();
+    void bind() const;
+    void unbind() const;
+    void addAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* offset);
 };
 
 class VertexBuffer {
 public:
     GLuint id;
 
-    VertexBuffer(const void* data, size_t size, GLenum usage = GL_STATIC_DRAW) { // Create a new VBO, bind to it and insert data into it
-        glGenBuffers(1, &id);
-        glBindBuffer(GL_ARRAY_BUFFER, id);
-        glBufferData(GL_ARRAY_BUFFER, size, data, usage);
-    }
-
-    ~VertexBuffer() {
-        glDeleteBuffers(1, &id);
-    }
-
-    void bind() const {
-        glBindBuffer(GL_ARRAY_BUFFER, id);
-    }
-
-    void unbind() const {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
+    VertexBuffer(const void* data, size_t size, GLenum usage = GL_STATIC_DRAW);
+    ~VertexBuffer();
+    void bind() const;
+    void unbind() const;
 };
 
 class ElementBuffer {
 public:
     GLuint id;
 
-    ElementBuffer(const void* data, size_t size, GLenum usage = GL_STATIC_DRAW) { 
-        glGenBuffers(1, &id);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, usage);
-    }
-
-    ~ElementBuffer() {
-        glDeleteBuffers(1, &id);
-    }
-
-    void bind() const {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-    }
-
-    void unbind() const {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
+    ElementBuffer(const void* data, size_t size, GLenum usage = GL_STATIC_DRAW); 
+    ~ElementBuffer();
+    void bind() const;
+    void unbind() const;
 };

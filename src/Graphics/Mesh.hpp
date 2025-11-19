@@ -24,22 +24,8 @@ public:
     VertexArray vao;
     VertexBuffer vbo;
     ElementBuffer ebo;
-
     GLsizei indexCount;
 
-    
-    Mesh(const float vertices[], const int indices[]):
-    vbo(vertices, sizeof(vertices)),
-    ebo(indices, sizeof(indices)) 
-    indexCount(vertices.){
-        vao.bind();
-
-        vao.addAttribute(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-        vao.addAttribute(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    }
-
-    void draw() const {
-        vao.bind();
-        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
-    }
+    Mesh(std::vector<float> vertices, std::vector<int> indices);
+    void draw() const; 
 };
