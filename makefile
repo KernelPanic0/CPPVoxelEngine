@@ -1,5 +1,3 @@
-# === Makefile for voxel project ===
-
 CXX := g++
 CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/
 LDFLAGS := -lglfw -lGL -ldl -lX11 -lpthread -lXrandr -lXi
