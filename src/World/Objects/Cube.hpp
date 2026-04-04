@@ -1,5 +1,7 @@
+// clang-format off
 #pragma once
 #include "../../Graphics/Mesh.hpp"
+#include "Object.hpp"
 
 std::vector<float> vertices = {
     // Sides
@@ -51,6 +53,8 @@ std::vector<int> indices = {
     1, 2, 3  // second triangle
 };
 
+Mesh cubeMesh = {vertices, indices};
+ObjectAttribute position = {3, GL_FLOAT};
+ObjectAttribute textureCoordinates = {2, GL_FLOAT};
 
-
-Mesh cube = Mesh(vertices, indices);
+Object cube = {cubeMesh, {position, textureCoordinates}};

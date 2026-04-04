@@ -2,7 +2,7 @@
 
 #include "../includes/glad/glad.h"
 #include "./GLFW/Window.hpp"
-#include <GLFW/glfw3.h>  // System-installed GLFW
+#include <GLFW/glfw3.h> // System-installed GLFW
 #include "./shader_util.h"
 
 #include "Input/Input.hpp"
@@ -12,20 +12,15 @@
 
 #include "./VertexManager.hpp"
 
-// debugging data 
-struct MeshStats {
-    static int meshCount;
-    static int drawCallsCount;
-};
+// debugging data
+// struct MeshStats
+// {
+//     static int meshCount;
+//     static int drawCallsCount;
+// };
 
-// this will contain each 
-class Mesh {
-public:
-    VertexArray vao;
-    VertexBuffer vbo;
-    ElementBuffer ebo;
-    GLsizei indexCount;
-
-    Mesh(std::vector<float> vertices, std::vector<int> indices);
-    void draw() const; 
+struct Mesh
+{
+    std::vector<float> vertices;
+    std::vector<int> indices;
 };
