@@ -54,7 +54,7 @@ std::vector<int> indices = {
 };
 
 Mesh cubeMesh = {vertices, indices};
-ObjectAttribute position = {3, GL_FLOAT};
-ObjectAttribute textureCoordinates = {2, GL_FLOAT};
+ObjectAttribute position = {3, GL_FLOAT, sizeof(float)};
+ObjectAttribute textureCoordinates = {2, GL_FLOAT, sizeof(float)};
 
 Object cube = {cubeMesh, {position, textureCoordinates}};

@@ -1,13 +1,12 @@
 #include <vector>
 #include "../includes/glad/glad.h"
-#include "Mesh.hpp"
-#include "VertexManager.hpp"
+#include "Buffers.hpp"
+#include "../World/Objects/Object.hpp"
 
 struct SceneObject
 {
-    Mesh mesh;
+    Object object;
     GLuint vao, vbo, ebo;
-    unsigned int attribteCount;
 };
 
 class GraphicsManager
@@ -15,12 +14,12 @@ class GraphicsManager
 private:
     GLuint currentlyBoundVAO;
     std::vector<GLuint> ids;
-    // Need a list of meshes to then be able to able to bind to them and render them ..?
+    // Need a list of scene objects to then be able to able to bind to them and render them
     std::vector<SceneObject> objectList;
 
 public:
     GraphicsManager();
     ~GraphicsManager();
-    void AddSceneObject(Mesh mesh);
-    void DrawAllMeshes();
+    void AddSceneObject(Object object);
+    void DrawAllObjects();
 };

@@ -10,4 +10,5 @@ struct ObjectAttribute
 {
     unsigned int size;
     GLenum type;
+    unsigned int typeSize;
 };

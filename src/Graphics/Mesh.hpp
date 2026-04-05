@@ -10,7 +10,7 @@
 #include "../includes/glm/gtc/matrix_transform.hpp"
 #include "../includes/glm/gtc/type_ptr.hpp"
 
-#include "./VertexManager.hpp"
+#include "Buffers.hpp"
 
 // debugging data
 // struct MeshStats

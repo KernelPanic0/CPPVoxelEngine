@@ -1,6 +1,7 @@
 {
     "C_Cpp.default.includePath": [
-        "./src/"
+        "./src/",
+        "src/"
     ],
     "files.associations": {
         "iostream": "cpp",
