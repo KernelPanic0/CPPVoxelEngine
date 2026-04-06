@@ -1,14 +1,21 @@
 CXX := g++
-CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/
+CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/ -g
 LDFLAGS := -lglfw -lGL -ldl -lX11 -lpthread -lXrandr -lXi
 TARGET := voxel
 
 SRC := ./src/main.cpp \
     ./includes/glad/glad.c \
     ./src/stb_image.cpp \
+    ./src/shader_util.cpp \
     ./src/GLFW/Window.cpp \
     ./src/Camera/Camera.cpp \
     ./src/Input/Input.cpp \
+    ./src/Graphics/GraphicsManager.cpp \
+    ./src/Graphics/Buffers.cpp \
+    ./src/Graphics/Mesh.cpp \
+    ./src/World/Scene.cpp \
+    ./src/World/Objects/Object.cpp \
+    ./src/World/Objects/Cube.cpp \
     ./includes/imgui/imgui.cpp \
     ./includes/imgui/imgui_draw.cpp \
     ./includes/imgui/imgui_demo.cpp \
