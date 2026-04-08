@@ -1,11 +1,5 @@
 #include "GraphicsManager.hpp"
 
-// GraphicsManager::GraphicsManager(Shader shaderProgram)
-// {
-//     this->shaderProgram = shaderProgram;
-//     shaderProgram.use();
-// }
-
 GraphicsManager::GraphicsManager()
 {
     window = std::make_unique<Window>();
@@ -13,6 +7,7 @@ GraphicsManager::GraphicsManager()
     shader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader.frag");
     shader->use();
 }
+
 GraphicsManager::~GraphicsManager()
 {
     shader.reset();
@@ -21,12 +16,10 @@ GraphicsManager::~GraphicsManager()
 
 SceneObject GraphicsManager::CreateSceneObject(Object object)
 {
-    VertexArray vao;
-    VertexBuffer vbo(object.mesh.vertices.data());
-    ElementBuffer ebo(object.mesh.indices.data());
+    std::unique_ptr<VertexArray> vao = std::make_unique<VertexArray>();
+    std::unique_ptr<VertexBuffer> vbo = std::make_unique<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
+    std::unique_ptr<ElementBuffer> ebo = std::make_unique<ElementBuffer>((GLuint *)object.mesh.indices.data(), object.mesh.indices.size() * 4);
 
-    vbo.Bind();
-    // insert all attributes
     // calculate stride
     GLsizei stride = 0;
     for (const auto &attr : object.attributes)
@@ -34,46 +27,25 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
         stride += attr.size * attr.typeSize;
     }
 
+    // insert all attributes
     for (int i = 0; i < object.attributes.size(); i++)
     {
-        glVertexAttribPointer(i, object.attributes[i].size, object.attributes[i].type, GL_FALSE, stride, (void *)0);
+        glVertexAttribPointer(i, object.attributes[i].size, object.attributes[i].type, GL_FALSE, stride, (void *)0); // Offset still needs to be added
         glEnableVertexAttribArray(i);
     }
 
-    vao.Unbind();
-    SceneObject newSceneObject = {object, vao.id, vbo.id, ebo.id};
-
+    SceneObject newSceneObject = {object, std::move(vao), std::move(vbo), std::move(ebo)};
     return newSceneObject;
 }
 
-void GraphicsManager::RenderObjects(std::vector<SceneObject> objectList) // TEMPORARY TEST
+void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) // TEMPORARY TEST
 {
-    // glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-    // glm::mat4 projection = glm::mat4(1.0f);
-    // projection = glm::perspective(glm::radians(65.0f), (float)800 / (float)600, 0.1f, 1000.0f);
+    while (!glfwWindowShouldClose(window->window))
+    {
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-    // const float radius = 10.0f;
-    // view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 2.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-    // // pass transformation matrices to the shader
-    // shader->setMat4("projection", projection); // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-    // shader->setMat4("view", view);
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    shader->setVec3("aPos", glm::vec3(0, 0, 0));
-    shader->setVec3("aColor", glm::vec3(0, 0, 0));
-
-    // glm::mat4 model = glm::mat4(1.0f);
-    // int yTransform = 1;
-
-    // for (int i = 0; i < objectList.size(); i++)
-    // {
-    //     Object thisObject = objectList[i].object;
-    //     model = glm::translate(model, glm::vec3(thisObject.x, thisObject.y, thisObject.z));
-    //     shader->setMat4("model", model);
-    // }
-    // glClearColor(0.5843f, 0.7922f, 0.9882f, 1.0f);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glfwSwapBuffers(window->window);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glfwSwapBuffers(window->window);
+    }
 }

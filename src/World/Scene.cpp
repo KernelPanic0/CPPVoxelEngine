@@ -8,7 +8,7 @@ Scene::Scene()
 void Scene::AddSceneObject(const Object &object)
 {
     SceneObject newSceneObject = graphicsManager->CreateSceneObject(object);
-    objectList.push_back(newSceneObject);
+    objectList.push_back(std::move(newSceneObject));
 }
 
 void Scene::Render()

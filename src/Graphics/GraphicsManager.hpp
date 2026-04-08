@@ -9,7 +9,9 @@
 struct SceneObject
 {
     Object object;
-    GLuint vao, vbo, ebo;
+    std::unique_ptr<VertexArray> vao;
+    std::unique_ptr<VertexBuffer> vbo;
+    std::unique_ptr<ElementBuffer> ebo;
 };
 
 class GraphicsManager
@@ -26,5 +28,5 @@ public:
     GraphicsManager();
     ~GraphicsManager();
     SceneObject CreateSceneObject(Object object);
-    void RenderObjects(std::vector<SceneObject> objectList);
+    void RenderObjects(const std::vector<SceneObject> &objectList); // TEMPORARY TEST
 };

@@ -26,7 +26,7 @@ class VertexBuffer
 {
 public:
     GLuint id;
-    VertexBuffer(const void *data);
+    VertexBuffer(GLfloat *vertices, GLsizeiptr size);
     ~VertexBuffer();
     void Bind() const;
     void Unbind() const;
@@ -36,7 +36,7 @@ class ElementBuffer
 {
 public:
     GLuint id;
-    ElementBuffer(const void *data);
+    ElementBuffer(GLuint *indices, GLsizeiptr size);
     ~ElementBuffer();
     void Bind() const;
     void Unbind() const;

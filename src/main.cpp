@@ -5,14 +5,26 @@
 int main()
 {
     Scene scene;
-    Cube testCube(1, 1, 1);
-    Cube testCube2(1, 1, 2);
-    GraphicsManager graphicsManager;
+    // Cube testCube(1, 1, 1);
+    // Cube testCube2(1, 1, 2);
+    std::vector<float> vertices = {
+        0.5f, 0.5f, 0.0f,   // top right
+        0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f   // top left
+    };
 
-    scene.AddSceneObject(testCube);
-    scene.AddSceneObject(testCube2);
-    while (true)
-    {
-        scene.Render();
-    }
+    std::vector<int> indices = {
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
+
+    Mesh triangleM = {vertices, indices};
+    ObjectAttribute position = {3, GL_FLOAT, sizeof(float)};
+
+    Object triangle(triangleM, {position}, 0, 0, 0);
+
+    scene.AddSceneObject(triangle);
+    // scene.AddSceneObject(testCube2);
+    scene.Render();
 }

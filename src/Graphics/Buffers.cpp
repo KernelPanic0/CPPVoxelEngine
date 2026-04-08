@@ -26,13 +26,13 @@ void VertexArray::AddAttribute(GLuint index, GLint size, GLenum type, GLboolean 
     glVertexAttribPointer(index, size, type, normalized, stride, offset);
 }
 
-VertexBuffer::VertexBuffer(const void *data)
+VertexBuffer::VertexBuffer(GLfloat *vertices, GLsizeiptr size)
 { // Create a new VBO, bind to it and insert data into it
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 VertexBuffer::~VertexBuffer()
@@ -50,12 +50,12 @@ void VertexBuffer::Unbind() const
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-ElementBuffer::ElementBuffer(const void *data)
+ElementBuffer::ElementBuffer(GLuint *indices, GLsizeiptr size)
 {
     glGenBuffers(1, &id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 ElementBuffer::~ElementBuffer()
