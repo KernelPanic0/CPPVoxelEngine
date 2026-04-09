@@ -11,9 +11,9 @@ struct ObjectAttribute
 class Object
 {
 public:
-    int x, y, z;
+    glm::vec3 position;
     Mesh mesh;
     std::vector<ObjectAttribute> attributes;
-    Object(Mesh mesh, std::vector<ObjectAttribute> attributes, int x, int y, int z);
+    Object(Mesh mesh, std::vector<ObjectAttribute> attributes, glm::vec3 position);
     Object();
 };

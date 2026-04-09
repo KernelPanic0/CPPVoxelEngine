@@ -5,5 +5,5 @@
 class Cube : public Object
 {
 public:
-    Cube(int x, int y, int z);
+    Cube(glm::vec3 position);
 };

@@ -1,6 +1,6 @@
 #include "Cube.hpp"
 
-Cube::Cube(int x, int y, int z)
+Cube::Cube(glm::vec3 position)
 {
     // clang-format off
     std::vector<float> vertices = {
@@ -55,12 +55,8 @@ Cube::Cube(int x, int y, int z)
     // clang-format on
 
     Mesh cubeMesh = {vertices, indices};
-    ObjectAttribute position = {3, GL_FLOAT, sizeof(float)};
-    ObjectAttribute textureCoordinates = {2, GL_FLOAT, sizeof(float)};
+    ObjectAttribute positionAttr = {3, GL_FLOAT, sizeof(float)};
+    ObjectAttribute textureCoordinatesAttr = {2, GL_FLOAT, sizeof(float)};
 
-    Object cube(cubeMesh, {position, textureCoordinates}, x, y, z);
-
-    this->x = x;
-    this->y = y;
-    this->z = z;
+    Object cube(cubeMesh, {positionAttr, textureCoordinatesAttr}, position);
 }

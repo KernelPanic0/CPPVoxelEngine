@@ -5,8 +5,7 @@
 int main()
 {
     Scene scene;
-    // Cube testCube(1, 1, 1);
-    // Cube testCube2(1, 1, 2);
+
     std::vector<float> vertices = {
         0.5f, 0.5f, 0.0f,   // top right
         0.5f, -0.5f, 0.0f,  // bottom right
@@ -22,9 +21,8 @@ int main()
     Mesh triangleM = {vertices, indices};
     ObjectAttribute position = {3, GL_FLOAT, sizeof(float)};
 
-    Object triangle(triangleM, {position}, 0, 0, 0);
+    Object triangle(triangleM, {position}, glm::vec3(0, 0, 0));
 
     scene.AddSceneObject(triangle);
-    // scene.AddSceneObject(testCube2);
     scene.Render();
 }
