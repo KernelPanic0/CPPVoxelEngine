@@ -17,11 +17,8 @@ struct SceneObject
 class GraphicsManager
 {
 private:
-    GLuint currentlyBoundVAO;
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Window> window;
-    // Need a list of scene objects to then be able to able to bind to them and render them
-    // std::vector<SceneObject> objectList;
 
 public:
     // GraphicsManager(Shader shaderProgram);

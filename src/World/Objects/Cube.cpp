@@ -4,6 +4,7 @@ Cube::Cube(glm::vec3 position)
 {
     // clang-format off
     std::vector<float> vertices = {
+        // Position attribute // Texture attribute
         // Sides
         -0.5f, -0.5f, -0.5f,  0.5f, 0.25f, // 1 bottom right
         0.5f, -0.5f, -0.5f,  0.25f, 0.25f, // 1 bottom left
@@ -58,5 +59,7 @@ Cube::Cube(glm::vec3 position)
     ObjectAttribute positionAttr = {3, GL_FLOAT, sizeof(float)};
     ObjectAttribute textureCoordinatesAttr = {2, GL_FLOAT, sizeof(float)};
 
-    Object cube(cubeMesh, {positionAttr, textureCoordinatesAttr}, position);
+    this->mesh = cubeMesh;
+    this->attributes = {positionAttr, textureCoordinatesAttr};
+    this->position = position;
 }
