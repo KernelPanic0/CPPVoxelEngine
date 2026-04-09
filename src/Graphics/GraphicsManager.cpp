@@ -27,10 +27,14 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
         stride += attr.size * attr.typeSize;
     }
 
+    // calculate offset
+    GLsizeiptr offset = 0;
+
     // insert all attributes
     for (int i = 0; i < object.attributes.size(); i++)
     {
-        glVertexAttribPointer(i, object.attributes[i].size, object.attributes[i].type, GL_FALSE, stride, (void *)0); // Offset still needs to be added
+        glVertexAttribPointer(i, object.attributes[i].size, object.attributes[i].type, GL_FALSE, stride, (const GLvoid *)offset);
+        offset += object.attributes[i].size * object.attributes[i].type;
         glEnableVertexAttribArray(i);
     }
 

@@ -1,7 +1,8 @@
 CXX := g++
 CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/ -g
 LDFLAGS := -lglfw -lGL -ldl -lX11 -lpthread -lXrandr -lXi
-TARGET := voxel
+BUILD_DIR := ./build
+TARGET := $(BUILD_DIR)/voxel
 
 SRC := ./src/main.cpp \
     ./includes/glad/glad.c \
@@ -26,20 +27,26 @@ SRC := ./src/main.cpp \
 
 OBJ := $(SRC:.cpp=.o)
 OBJ := $(OBJ:.c=.o)
+OBJ := $(patsubst %,$(BUILD_DIR)/%,$(OBJ))
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(TARGET): $(BUILD_DIR) $(OBJ)
 	$(CXX) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
-%.o: %.cpp
+$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-%.o: %.c
+$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
+	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -rf $(BUILD_DIR)
 
 run: all
 	./$(TARGET)
