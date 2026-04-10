@@ -76,10 +76,10 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         const float radius = 10.0f;
         float camX = sin(glfwGetTime()) * radius;
         float camZ = cos(glfwGetTime()) * radius;
-        view = glm::lookAt(glm::vec3(camX, 0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0, 1, 0));
+        view = glm::lookAt(glm::vec3(camX, 0, camZ), glm::vec3(objectList[0].object.position), glm::vec3(0, 1, 0));
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0, 0, -5));
+        model = glm::translate(model, glm::vec3(objectList[0].object.position));
 
         shader->setMat4("projection", projection);
         shader->setMat4("view", view);
