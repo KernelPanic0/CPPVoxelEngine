@@ -14,6 +14,7 @@ public:
     glm::vec3 position;
     Mesh mesh;
     std::vector<ObjectAttribute> attributes;
-    Object(Mesh mesh, std::vector<ObjectAttribute> attributes, glm::vec3 position);
+    std::string texturePath;
+    Object(Mesh mesh, std::vector<ObjectAttribute> attributes, glm::vec3 position, std::string texturePath = "");
     Object();
 };

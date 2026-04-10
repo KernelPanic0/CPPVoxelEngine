@@ -5,6 +5,7 @@
 #include "../World/Objects/Object.hpp"
 #include "memory"
 #include "../GLFW/Window.hpp"
+#include "../misc/stb_image.h"
 
 struct SceneObject
 {
@@ -12,6 +13,7 @@ struct SceneObject
     std::unique_ptr<VertexArray> vao;
     std::unique_ptr<VertexBuffer> vbo;
     std::unique_ptr<ElementBuffer> ebo;
+    unsigned int textureId;
 };
 
 class GraphicsManager
@@ -19,6 +21,8 @@ class GraphicsManager
 private:
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Window> window;
+
+    unsigned int GenerateTexture(std::string path);
 
 public:
     // GraphicsManager(Shader shaderProgram);

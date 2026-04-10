@@ -5,5 +5,5 @@
 class Cube : public Object
 {
 public:
-    Cube(glm::vec3 position);
+    Cube(glm::vec3 position, std::string texturePath = "");
 };

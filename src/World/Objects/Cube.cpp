@@ -1,6 +1,6 @@
 #include "Cube.hpp"
 
-Cube::Cube(glm::vec3 position)
+Cube::Cube(glm::vec3 position, std::string _texturePath)
 {
     // clang-format off
     std::vector<float> vertices = {
@@ -62,4 +62,5 @@ Cube::Cube(glm::vec3 position)
     this->mesh = cubeMesh;
     this->attributes = {positionAttr, textureCoordinatesAttr};
     this->position = position;
+    this->texturePath = _texturePath; // Apparently std::strings arent null terminated by default..?
 }

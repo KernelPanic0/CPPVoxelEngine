@@ -23,7 +23,7 @@ int main()
 
     // Object triangle(triangleM, {position}, glm::vec3(0, 0, 0));
 
-    Cube c(glm::vec3(0, 0, 0));
+    Cube c(glm::vec3(0, 0, 0), "./assets/grass.jpg");
 
     scene.AddSceneObject(c);
     scene.Render();

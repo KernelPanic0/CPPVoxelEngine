@@ -39,7 +39,19 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
         glEnableVertexAttribArray(i);
     }
 
-    SceneObject newSceneObject = {object, std::move(vao), std::move(vbo), std::move(ebo)};
+    // generate texture (if any)
+    unsigned int textureId = 0;
+    if (object.texturePath != "")
+    {
+        textureId = GenerateTexture(object.texturePath);
+    }
+
+    SceneObject newSceneObject = {
+        object,
+        std::move(vao),
+        std::move(vbo),
+        std::move(ebo),
+        textureId};
     return newSceneObject;
 }
 
@@ -49,6 +61,9 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, objectList[0].textureId);
 
         glm::mat4 view = glm::mat4(1.0f); // init identity matrix first
         glm::mat4 projection = glm::mat4(1.0f);
@@ -73,4 +88,38 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         glDrawArrays(GL_TRIANGLES, 0, 36); // vertex count needs to be made dynamic
         glfwSwapBuffers(window->window);
     }
+}
+
+unsigned int GraphicsManager::GenerateTexture(std::string path)
+{
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char *textureData = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+
+    unsigned int textureToGen;
+    glGenTextures(1, &textureToGen);
+
+    glBindTexture(GL_TEXTURE_2D, textureToGen);
+    // set wrapping / filtering options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glBindTexture(GL_TEXTURE_2D, textureToGen);
+    // set wrapping / filtering options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(textureData);
+
+    return textureToGen;
 }
