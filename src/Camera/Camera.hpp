@@ -6,8 +6,7 @@
 class Camera
 {
 public:
-    Camera();
-    Camera(glm::vec3 cameraPos);
+    Camera(glm::vec3 cameraPos = glm::vec3(0, 0, 0));
 
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);

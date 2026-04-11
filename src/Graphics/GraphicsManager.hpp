@@ -25,9 +25,11 @@ private:
     unsigned int GenerateTexture(std::string path);
 
 public:
-    // GraphicsManager(Shader shaderProgram);
     GraphicsManager();
     ~GraphicsManager();
     SceneObject CreateSceneObject(Object object);
     void RenderObjects(const std::vector<SceneObject> &objectList); // TEMPORARY TEST
+    // I want the main loop to be inside of "Scene", as it would allow for registering input and controlling the camera,
+    // but instantiating the window in the Scene doesn't make sense.
+    GLFWwindow *GetWindow() const;
 };

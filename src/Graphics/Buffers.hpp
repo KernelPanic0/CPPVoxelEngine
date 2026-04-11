@@ -4,8 +4,6 @@
 #include "./GLFW/Window.hpp"
 #include <GLFW/glfw3.h> // System-installed GLFW
 #include "./shader_util.h"
-
-#include "Input/Input.hpp"
 #include "../includes/glm/glm.hpp"
 #include "../includes/glm/gtc/matrix_transform.hpp"
 #include "../includes/glm/gtc/type_ptr.hpp"

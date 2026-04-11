@@ -10,7 +10,7 @@ SRC := ./src/main.cpp \
     ./src/shader_util.cpp \
     ./src/GLFW/Window.cpp \
     ./src/Camera/Camera.cpp \
-    ./src/Input/Input.cpp \
+    ./src/GLFW/Input.cpp \
     ./src/Graphics/GraphicsManager.cpp \
     ./src/Graphics/Buffers.cpp \
     ./src/Graphics/Mesh.cpp \

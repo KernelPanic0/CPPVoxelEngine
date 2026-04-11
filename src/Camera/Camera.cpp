@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 
-void Camera::MoveCamera(float xoffset, float yoffset) {
+void Camera::MoveCamera(float xoffset, float yoffset)
+{
     const float sensitivity = 0.1f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
@@ -20,10 +21,7 @@ void Camera::MoveCamera(float xoffset, float yoffset) {
     cameraFront = glm::normalize(direction);
 }
 
-Camera::Camera(glm::vec3 cameraPos) {
-    this->cameraPos = cameraPos; 
-}
-
-Camera::Camera() {
-
+Camera::Camera(glm::vec3 cameraPos)
+{
+    this->cameraPos = cameraPos;
 }

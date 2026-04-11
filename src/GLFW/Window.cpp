@@ -1,6 +1,6 @@
 #include "Window.hpp"
 #include "Camera/Camera.hpp"
-#include "Input/Input.hpp"
+#include "Input.hpp"
 #include <iostream>
 class WindowInitializer;
 
@@ -37,7 +37,7 @@ Window::Window()
     }
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, Input::mouse_callback);
+    glfwSetCursorPosCallback(window, Input::MouseCallback);
 
     this->window = window;
 }
