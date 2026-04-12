@@ -24,11 +24,11 @@ void Scene::Render()
     GLFWwindow *window = graphicsManager->GetWindow();
     while (!glfwWindowShouldClose(window))
     {
+        // This will need to be cleaned up
         float currentFrame = glfwGetTime();
         Settings::deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        glfwPollEvents();
         Input::ProcessInput(graphicsManager->GetWindow(), temp);
         // camera->
         graphicsManager->RenderObjects(objectList);
