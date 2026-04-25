@@ -19,17 +19,14 @@ void Scene::AddSceneObject(const Object &object)
 void Scene::Render()
 {
     bool temp = false;
-    float lastFrame = 0.0f;
 
     GLFWwindow *window = graphicsManager->GetWindow();
     while (!glfwWindowShouldClose(window))
     {
-        // This will need to be cleaned up
-        float currentFrame = glfwGetTime();
-        Settings::deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
+        // sometimes there is a bug where you can only move the camera view up and down.
         Input::ProcessInput(graphicsManager->GetWindow(), temp);
+        // really this shouldn't be in "Settings".
+        Settings::updateDeltaTime();
         // camera->
         graphicsManager->RenderObjects(objectList);
     }
