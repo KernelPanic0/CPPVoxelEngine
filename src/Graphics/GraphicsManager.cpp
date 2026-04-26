@@ -63,33 +63,36 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, objectList[0].textureId);
+    for (const SceneObject &object : objectList)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, object.textureId);
 
-    glm::mat4 view = glm::mat4(1.0f); // init identity matrix first
-    glm::mat4 projection = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f); // init identity matrix first
+        glm::mat4 projection = glm::mat4(1.0f);
 
-    GLint m_viewport[4];
-    glGetIntegerv(GL_VIEWPORT, m_viewport);
+        GLint m_viewport[4];
+        glGetIntegerv(GL_VIEWPORT, m_viewport);
 
-    projection = glm::perspective(glm::radians(45.0f), (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
+        projection = glm::perspective(glm::radians(45.0f), (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
 
-    const float radius = 10.0f;
-    float camX = sin(glfwGetTime()) * radius;
-    float camZ = cos(glfwGetTime()) * radius;
+        const float radius = 10.0f;
+        float camX = sin(glfwGetTime()) * radius;
+        float camZ = cos(glfwGetTime()) * radius;
 
-    Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
+        Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
 
-    view = glm::lookAt(camera->cameraPos, camera->cameraPos + camera->cameraFront, camera->cameraUp);
+        view = glm::lookAt(camera->cameraPos, camera->cameraPos + camera->cameraFront, camera->cameraUp);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(objectList[0].object.position));
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(object.object.position));
 
-    shader->setMat4("projection", projection);
-    shader->setMat4("view", view);
-    shader->setMat4("model", model);
+        shader->setMat4("projection", projection);
+        shader->setMat4("view", view);
+        shader->setMat4("model", model);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36); // vertex count needs to be made dynamic
+        glDrawArrays(GL_TRIANGLES, 0, 36); // vertex count needs to be made dynamic
+    }
     glfwSwapBuffers(window->window);
 }
 
