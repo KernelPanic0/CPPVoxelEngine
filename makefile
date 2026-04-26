@@ -6,7 +6,7 @@ TARGET := $(BUILD_DIR)/voxel
 
 SRC := ./src/main.cpp \
     ./includes/glad/glad.c \
-    ./src/stb_image.cpp \
+    ./src/misc/stb_image.cpp \
     ./src/shader_util.cpp \
     ./src/GLFW/Window.cpp \
     ./src/Camera/Camera.cpp \
