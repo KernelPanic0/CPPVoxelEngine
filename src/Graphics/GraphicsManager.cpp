@@ -91,7 +91,7 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         shader->setMat4("view", view);
         shader->setMat4("model", model);
 
-        glDrawArrays(GL_TRIANGLES, 0, 36); // vertex count needs to be made dynamic
+        glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size());
     }
     glfwSwapBuffers(window->window);
 }
