@@ -4,8 +4,13 @@ GraphicsManager::GraphicsManager()
 {
     window = std::make_unique<Window>();
 
-    shader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader2.vert", "./src/Graphics/Shaders/test_shader2.frag");
+    shader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader.frag");
+    lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader_light.frag");
+
     shader->use();
+    shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
+    shader->setVec3("lightColor", 0.0f, 1.0f, 0.0f);
+    shader->setVec3("lightPos", 10, -20, 10);
     glEnable(GL_DEPTH_TEST);
 
     // Wireframe
@@ -20,7 +25,7 @@ GraphicsManager::~GraphicsManager()
 
 SceneObject GraphicsManager::CreateSceneObject(Object object)
 {
-    std::unique_ptr<VertexArray> vao = std::make_unique<VertexArray>();
+    std::unique_ptr<VertexArray> vao = std::make_unique<VertexArray>(); // Objects with the same mesh and layout (attributes/foormat) should share a VAO for optimal performance. This needs to be changed.
     std::unique_ptr<VertexBuffer> vbo = std::make_unique<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
     std::unique_ptr<ElementBuffer> ebo = std::make_unique<ElementBuffer>((GLuint *)object.mesh.indices.data(), object.mesh.indices.size() * 4);
 
@@ -87,9 +92,20 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
 
-        shader->setMat4("projection", projection);
-        shader->setMat4("view", view);
-        shader->setMat4("model", model);
+        if (object.object.position.y == -20) // Is a light. This will be changed
+        {
+            lightShader->use();
+            lightShader->setMat4("projection", projection);
+            lightShader->setMat4("view", view);
+            lightShader->setMat4("model", model);
+        }
+        else
+        {
+            shader->use();
+            shader->setMat4("projection", projection);
+            shader->setMat4("view", view);
+            shader->setMat4("model", model);
+        }
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size());
     }

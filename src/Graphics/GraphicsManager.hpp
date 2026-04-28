@@ -19,8 +19,11 @@ struct SceneObject
 class GraphicsManager
 {
 private:
-    std::unique_ptr<Shader> shader;
     std::unique_ptr<Window> window;
+    std::unique_ptr<Shader> shader;
+    std::unique_ptr<Shader> lightShader;
+
+    // std::unique_ptr<Shader *> activeShader;
 
     unsigned int GenerateTexture(std::string path);
 
