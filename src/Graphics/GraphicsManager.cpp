@@ -8,8 +8,8 @@ GraphicsManager::GraphicsManager()
     lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader_light.frag");
 
     shader->use();
-    shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
-    shader->setVec3("lightColor", 0.0f, 1.0f, 0.0f);
+    // shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
+    shader->setVec3("lightColor", 1.0, 0.733, 0.529);
     shader->setVec3("lightPos", 10, -20, 10);
     glEnable(GL_DEPTH_TEST);
 
