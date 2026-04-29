@@ -13,6 +13,9 @@ GraphicsManager::GraphicsManager()
     shader->setVec3("lightPos", 10, -20, 10);
     glEnable(GL_DEPTH_TEST);
 
+    // Face culling
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_FRONT);
     // Wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }

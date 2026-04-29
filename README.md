@@ -79,7 +79,8 @@ Vertex attribute pointers are configured manually with explicit stride and offse
 - [ ] Greedy meshing to reduce per-chunk triangle count
 - [ ] Frustum and occlusion culling
 - [ ] Batch draw calls to minimize CPU-GPU command submission overhead
-- [ ] Diffuse Lighting
+- [x] Diffuse Lighting
+- [ ] Shadows
 - [ ] Chunk geometry caching to avoid vertex recomputation
 - [x] Code refactoring and separation of rendering and world logic
 
