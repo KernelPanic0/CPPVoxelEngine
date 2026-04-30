@@ -2,7 +2,7 @@
 
 A WIP voxel engine I built from scratch in C++ to teach myself OpenGL 3.3 Core Profile, the graphics pipeline, and GPU resource management.
 
-<img src="./assets/showcases/screenshot.png" alt="Voxel Engine Screenshot" width="600"/>
+<img src="./assets/showcases/screenshot2.png" alt="Voxel Engine Screenshot" width="600"/>
 
 ## Overview
 
