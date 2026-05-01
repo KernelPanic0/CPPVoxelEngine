@@ -6,6 +6,7 @@
 #include "memory"
 #include "../GLFW/Window.hpp"
 #include "../misc/stb_image.h"
+#include <unordered_map>
 
 struct SceneObject
 {
@@ -22,6 +23,7 @@ private:
     std::unique_ptr<Window> window;
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
+    std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
 
     // std::unique_ptr<Shader *> activeShader;
 

@@ -2,7 +2,7 @@
 
 GraphicsManager::GraphicsManager()
 {
-    window = std::make_unique<Window>();
+    window = std::make_unique<Window>(); // needs to check if creation did actually happen
 
     shader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader.frag");
     lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader_light.frag");
@@ -54,7 +54,17 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
     unsigned int textureId = 0;
     if (object.texturePath != "")
     {
-        textureId = GenerateTexture(object.texturePath);
+        auto cachedTexture = textureCache.find(object.texturePath);
+
+        if (cachedTexture != textureCache.end()) // if texture has already been cached
+        {
+            textureId = cachedTexture->second;
+        }
+        else
+        {
+            textureId = GenerateTexture(object.texturePath);
+            textureCache.insert({object.texturePath, textureId});
+        }
     }
 
     SceneObject newSceneObject = {
