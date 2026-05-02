@@ -5,12 +5,12 @@ GraphicsManager::GraphicsManager()
     window = std::make_unique<Window>(); // needs to check if creation did actually happen
 
     shader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader.frag");
-    lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader_light.frag");
+    // lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader_light.frag");
 
     shader->use();
     // shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
     shader->setVec3("lightColor", 1.0, 0.733, 0.529);
-    shader->setVec3("lightPos", 10, -20, 10);
+    shader->setVec3("lightPos", 10, 20, 10);
     glEnable(GL_DEPTH_TEST);
 
     // Face culling
@@ -105,20 +105,10 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
 
-        if (object.object.position.y == -20) // Is a light. This will be changed
-        {
-            lightShader->use();
-            lightShader->setMat4("projection", projection);
-            lightShader->setMat4("view", view);
-            lightShader->setMat4("model", model);
-        }
-        else
-        {
-            shader->use();
-            shader->setMat4("projection", projection);
-            shader->setMat4("view", view);
-            shader->setMat4("model", model);
-        }
+        shader->use();
+        shader->setMat4("projection", projection);
+        shader->setMat4("view", view);
+        shader->setMat4("model", model);
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size());
     }

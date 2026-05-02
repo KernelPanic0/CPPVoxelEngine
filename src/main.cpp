@@ -12,11 +12,10 @@ int main()
     const siv::PerlinNoise::seed_type seed = rd();
 
     const siv::PerlinNoise perlin{seed};
-    Cube light(glm::vec3(10, -20, 10), "./assets/grass.jpg");
 
-    for (int x = 0; x < 20; x++)
+    for (int x = 0; x < 100; x++)
     {
-        for (int z = 0; z < 20; z++)
+        for (int z = 0; z < 100; z++)
         {
             double noise = perlin.octave2D_01(((x + 20) * 0.005), ((z + 20) * 0.005), 4);
             int yTransform = (int)-2.0f * noise * 30;
@@ -26,6 +25,5 @@ int main()
         }
     }
 
-    scene.AddSceneObject(light);
     scene.Render();
 }
