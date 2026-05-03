@@ -124,6 +124,7 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
             shader->setMat4("projection", projection);
             shader->setMat4("view", view);
             shader->setMat4("model", model);
+            shader->setVec3("camPos", camera->cameraPos);
         }
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size());

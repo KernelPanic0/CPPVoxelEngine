@@ -8,6 +8,7 @@ in vec3 FragWorldPos;
 uniform sampler2D objectTexture;
 uniform vec3 lightColor;
 uniform vec3 lightPos;
+uniform vec3 camPos;
 
 void main()
 {
@@ -20,6 +21,14 @@ void main()
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
 
+    float fogMaxDist = 120.0;
+    float fogMinDist = 0.1;
+    vec4 fogColor = vec4(0.4, 0.4, 0.4, 1.0);
+
+    float dist = length(FragWorldPos.xyz - camPos);
+    float fogFactor = (fogMaxDist - dist) / (fogMaxDist - fogMinDist);
+    fogFactor = clamp(fogFactor, 0.05, 1.0);
+
     vec4 result = vec4((ambient + diffuse), 1.0) * texture(objectTexture, TextureCoord);
-    FragColor = result;
+    FragColor = mix(fogColor, result, fogFactor);
 }
