@@ -6,6 +6,7 @@ layout (location = 2) in vec3 aNormal;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform float time;
 
 out vec3 Normal;
 out vec2 TextureCoord;
@@ -13,8 +14,12 @@ out vec3 FragWorldPos;
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(aPos, 1.0);
-    FragWorldPos = vec3(model * vec4(aPos, 1.0));
-    TextureCoord = aTextureCoord;
+    vec3 pos = aPos;
+    pos.x += sin(time + pos.y) * 0.05;
+    pos.z += sin(time + pos.x) * 0.05;
+    pos.y += cos(time + pos.z) * 0.05;
+
+    gl_Position = projection * view * model * vec4(pos, 1.0);
+    FragWorldPos = vec3(model * vec4(pos, 1.0));
     Normal = aNormal;
 }

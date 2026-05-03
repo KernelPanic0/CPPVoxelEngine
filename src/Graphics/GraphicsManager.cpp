@@ -4,8 +4,8 @@ GraphicsManager::GraphicsManager()
 {
     window = std::make_unique<Window>(); // needs to check if creation did actually happen
 
-    shader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader.frag");
-    // lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/test_shader.vert", "./src/Graphics/Shaders/test_shader_light.frag");
+    shader = std::make_unique<Shader>("./src/Graphics/Shaders/shader.vert", "./src/Graphics/Shaders/shader.frag");
+    lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/shader_water.vert", "./src/Graphics/Shaders/shader_water.frag");
 
     shader->use();
     // shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
@@ -16,6 +16,11 @@ GraphicsManager::GraphicsManager()
     // Face culling
     // glEnable(GL_CULL_FACE);
     // glCullFace(GL_FRONT);
+
+    // Blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // Wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
@@ -46,7 +51,7 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
     for (int i = 0; i < object.attributes.size(); i++)
     {
         glVertexAttribPointer(i, object.attributes[i].size, object.attributes[i].type, GL_FALSE, stride, (const GLvoid *)offset);
-        offset += object.attributes[i].size * object.attributes[i].typeSize; // FIX: use typeSize, not type enum value
+        offset += object.attributes[i].size * object.attributes[i].typeSize;
         glEnableVertexAttribArray(i);
     }
 
@@ -56,7 +61,7 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
     {
         auto cachedTexture = textureCache.find(object.texturePath);
 
-        if (cachedTexture != textureCache.end()) // if texture has already been cached
+        if (cachedTexture != textureCache.end())
         {
             textureId = cachedTexture->second;
         }
@@ -105,10 +110,21 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
 
-        shader->use();
-        shader->setMat4("projection", projection);
-        shader->setMat4("view", view);
-        shader->setMat4("model", model);
+        if (object.object.position.y < -40)
+        {
+            lightShader->use();
+            lightShader->setMat4("projection", projection);
+            lightShader->setMat4("view", view);
+            lightShader->setMat4("model", model);
+            lightShader->setFloat("time", glfwGetTime());
+        }
+        else
+        {
+            shader->use();
+            shader->setMat4("projection", projection);
+            shader->setMat4("view", view);
+            shader->setMat4("model", model);
+        }
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size());
     }

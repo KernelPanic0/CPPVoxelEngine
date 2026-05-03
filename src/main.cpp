@@ -12,6 +12,7 @@ int main()
     const siv::PerlinNoise::seed_type seed = rd();
 
     const siv::PerlinNoise perlin{seed};
+    Cube theWiggler(glm::vec3(0, 5, 0), "./assets/grass.jpg");
 
     for (int x = 0; x < 100; x++)
     {
@@ -24,6 +25,8 @@ int main()
             scene.AddSceneObject(c);
         }
     }
+
+    scene.AddSceneObject(theWiggler);
 
     scene.Render();
 }

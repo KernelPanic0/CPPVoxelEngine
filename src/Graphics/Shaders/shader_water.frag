@@ -21,5 +21,5 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
 
     vec4 result = vec4((ambient + diffuse), 1.0) * texture(objectTexture, TextureCoord);
-    FragColor = result;
+    FragColor = vec4(0.365, 0.686, 0.807, 0.7);
 }
