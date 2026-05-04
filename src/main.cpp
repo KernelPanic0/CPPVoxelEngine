@@ -14,9 +14,9 @@ int main()
     const siv::PerlinNoise perlin{seed};
     Cube theWiggler(glm::vec3(0, 5, 0), "./assets/grass.jpg");
 
-    for (int x = 0; x < 100; x++)
+    for (int x = 0; x < 400; x++)
     {
-        for (int z = 0; z < 100; z++)
+        for (int z = 0; z < 400; z++)
         {
             double noise = perlin.octave2D_01(((x + 20) * 0.005), ((z + 20) * 0.005), 4);
             int yTransform = (int)-2.0f * noise * 30;

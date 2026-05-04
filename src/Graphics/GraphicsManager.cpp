@@ -14,8 +14,9 @@ GraphicsManager::GraphicsManager()
     glEnable(GL_DEPTH_TEST);
 
     // Face culling
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_FRONT);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 
     // Blending
     glEnable(GL_BLEND);
@@ -127,7 +128,7 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
             shader->setVec3("camPos", camera->cameraPos);
         }
 
-        glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size());
+        glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
     }
     glfwSwapBuffers(window->window);
 }

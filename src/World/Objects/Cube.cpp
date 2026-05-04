@@ -6,12 +6,12 @@ Cube::Cube(glm::vec3 position, std::string _texturePath)
     std::vector<float> verticesT = {
         // Position attribute // Texture attribute // Normal attribute
         // Sides
-        -0.5f, -0.5f, -0.5f,  0.5f, 0.25f,   0.0f,  0.0f, -1.0f, // 1 bottom right
-        0.5f, -0.5f, -0.5f,  0.25f, 0.25f,   0.0f,  0.0f, -1.0f, // 1 bottom left
-        0.5f,  0.5f, -0.5f,  0.25f, 0.75f,   0.0f,  0.0f, -1.0f, // 1 top left
-        0.5f,  0.5f, -0.5f,  0.25f, 0.75f,   0.0f,  0.0f, -1.0f, // 2 top left
-        -0.5f,  0.5f, -0.5f,  0.5f, 0.75f,   0.0f,  0.0f, -1.0f, // 2 top right
-        -0.5f, -0.5f, -0.5f,  0.5f, 0.25f,   0.0f,  0.0f, -1.0f, // 2 bottom right
+        -0.5f, -0.5f, -0.5f,  0.5f, 0.25f,   0.0f,  0.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  0.25f, 0.75f,   0.0f,  0.0f, -1.0f,
+        0.5f, -0.5f, -0.5f,  0.25f, 0.25f,   0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.5f, 0.25f,   0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.5f, 0.75f,   0.0f,  0.0f, -1.0f,
+        0.5f,  0.5f, -0.5f,  0.25f, 0.75f,   0.0f,  0.0f, -1.0f,
 
         -0.5f, -0.5f,  0.5f,  0.5f, 0.25f,   0.0f,  0.0f,  1.0f,
         0.5f, -0.5f,  0.5f,  0.25f, 0.25f,   0.0f,  0.0f,  1.0f,
@@ -28,11 +28,11 @@ Cube::Cube(glm::vec3 position, std::string _texturePath)
         -0.5f,  0.5f,  0.5f,  0.25f, 0.75f, -1.0f,  0.0f,  0.0f, // 2 top right (1 top left)
 
         0.5f,  0.5f,  0.5f,  0.5f,  0.75f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  0.25f, 0.25f,  1.0f,  0.0f,  0.0f,
         0.5f,  0.5f, -0.5f,  0.25f, 0.75f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.25f, 0.25f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.25f, 0.25f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.5f,  0.25f,  1.0f,  0.0f,  0.0f,
         0.5f,  0.5f,  0.5f,  0.5f,  0.75f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f,  0.5f,  0.5f,  0.25f,  1.0f,  0.0f,  0.0f,
+        0.5f, -0.5f, -0.5f,  0.25f, 0.25f,  1.0f,  0.0f,  0.0f,
         // Bottom
         -0.5f, -0.5f, -0.5f,  0.25f, 0.0f,   0.0f, -1.0f,  0.0f, // 1 bottom left
         0.5f, -0.5f, -0.5f,  0.25f, 0.25f,   0.0f, -1.0f,  0.0f, // 1 top left
@@ -41,12 +41,12 @@ Cube::Cube(glm::vec3 position, std::string _texturePath)
         -0.5f, -0.5f,  0.5f,  0.5f, 0.0f,    0.0f, -1.0f,  0.0f, // 2 bottom right
         -0.5f, -0.5f, -0.5f,  0.25f, 0.0f,   0.0f, -1.0f,  0.0f, // bottom left
         // Top
-        -0.5f,  0.5f, -0.5f,  0.25f, 0.75,   0.0f,  1.0f,  0.0f, // 1 bottom left
-        0.5f,  0.5f, -0.5f,  0.25f, 1.0f,    0.0f,  1.0f,  0.0f, // 1 top left
-        0.5f,  0.5f,  0.5f,  0.5f, 1.0f,     0.0f,  1.0f,  0.0f, // 1 top right
-        0.5f,  0.5f,  0.5f,  0.5f, 1.0f,     0.0f,  1.0f,  0.0f, // 2 top right
-        -0.5f,  0.5f,  0.5f,  0.5f, 0.75f,   0.0f,  1.0f,  0.0f, // 2 bottom right
-        -0.5f,  0.5f, -0.5f,  0.25f, 0.75,   0.0f,  1.0f,  0.0f, // 2 bottom left
+        -0.5f,  0.5f, -0.5f,  0.25f, 0.75f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.5f,  1.0f,    0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f, -0.5f,  0.25f, 1.0f,    0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.25f, 0.75f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.5f,  0.75f,  0.0f,  1.0f,  0.0f,
+        0.5f,  0.5f,  0.5f,  0.5f,  1.0f,    0.0f,  1.0f,  0.0f,
     };
 
     std::vector<int> indices = {
