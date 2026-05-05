@@ -100,10 +100,6 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
 
         projection = glm::perspective(glm::radians(45.0f), (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
 
-        const float radius = 10.0f;
-        float camX = sin(glfwGetTime()) * radius;
-        float camZ = cos(glfwGetTime()) * radius;
-
         Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
 
         view = glm::lookAt(camera->cameraPos, camera->cameraPos + camera->cameraFront, camera->cameraUp);
