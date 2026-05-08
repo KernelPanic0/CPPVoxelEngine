@@ -4,6 +4,7 @@ out vec4 FragColor;
 in vec3 Normal;
 in vec2 TextureCoord;
 in vec3 FragWorldPos;
+in vec3 Pos;
 
 uniform sampler2D objectTexture;
 uniform vec3 lightColor;
@@ -29,6 +30,7 @@ void main()
     float fogFactor = (fogMaxDist - dist) / (fogMaxDist - fogMinDist);
     fogFactor = clamp(fogFactor, 0.05, 1.0);
 
-    vec4 result = vec4((ambient + diffuse), 1.0) * texture(objectTexture, TextureCoord);
+    // vec4 result = vec4((ambient + diffuse), 1.0) * texture(objectTexture, TextureCoord);
+    vec4 result = texture(objectTexture, TextureCoord) * vec4(0.1, 0.1, 0.1, 1.0); //* vec4(-0.5 * Pos, 1.0);
     FragColor = mix(fogColor, result, fogFactor);
 }
