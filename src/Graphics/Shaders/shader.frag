@@ -31,6 +31,6 @@ void main()
     fogFactor = clamp(fogFactor, 0.05, 1.0);
 
     // vec4 result = vec4((ambient + diffuse), 1.0) * texture(objectTexture, TextureCoord);
-    vec4 result = texture(objectTexture, TextureCoord) * vec4(0.1, 0.1, 0.1, 1.0); //* vec4(-0.5 * Pos, 1.0);
+    vec4 result = texture(objectTexture, TextureCoord) * vec4(-Pos.z + 0.5, -Pos.z + 0.5, -Pos.z + 0.5, 1.0) * vec4(Pos.y + 0.5, Pos.y + 0.5, Pos.y + 0.5, 1.0);
     FragColor = mix(fogColor, result, fogFactor);
 }
