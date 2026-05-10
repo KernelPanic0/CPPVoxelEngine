@@ -84,7 +84,7 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
 
 void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) // TEMPORARY TEST
 {
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.09f, 0.09f, 0.43f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (const SceneObject &object : objectList)
