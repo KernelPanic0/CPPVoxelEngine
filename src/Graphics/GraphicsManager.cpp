@@ -91,6 +91,7 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, object.textureId);
+        object.vao->Bind();
 
         glm::mat4 view = glm::mat4(1.0f); // init identity matrix first
         glm::mat4 projection = glm::mat4(1.0f);
