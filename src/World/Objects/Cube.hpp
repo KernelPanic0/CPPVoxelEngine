@@ -5,17 +5,13 @@
 
 enum class Face { PosX, NegX, PosY, NegY, PosZ, NegZ };
 
-// Shading entry for a single cube corner. `value` is only applied when rendering
-// `face`; the other two faces sharing that corner are unaffected.
-struct VertexShading
-{
-    Face face = Face::PosX;
-    int value = 0;
-};
+// Shading entries are keyed by (corner index, face) so the same corner can
+// carry different values on each of the three faces that share it.
+using VertexShadingMap = std::map<std::pair<int, Face>, int>;
 
 class Cube : public Object
 {
 public:
     // Cube corners are indexed 0-7 (see Cube.cpp for the layout).
-    Cube(glm::vec3 position, std::string texturePath = "", std::map<int, VertexShading> vertexShadingMap = {});
+    Cube(glm::vec3 position, std::string texturePath = "", VertexShadingMap vertexShadingMap = {});
 };
