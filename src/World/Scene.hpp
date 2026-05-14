@@ -2,6 +2,7 @@
 #include "../Camera/Camera.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../GLFW/Input.hpp"
+#include "World.hpp";
 #include <memory>
 
 class Scene
@@ -11,7 +12,7 @@ class Scene
     std::shared_ptr<Camera> camera;
 
 public:
-    Scene();
+    Scene(World world);
     void Render();
     void AddSceneObject(const Object &object);
 };

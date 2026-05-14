@@ -1,6 +1,6 @@
 #include "Scene.hpp"
 
-Scene::Scene()
+Scene::Scene(World world)
 {
     this->graphicsManager = std::make_unique<GraphicsManager>();
     this->camera = std::make_shared<Camera>();

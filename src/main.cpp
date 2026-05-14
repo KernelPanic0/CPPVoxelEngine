@@ -14,6 +14,7 @@ constexpr int yTransform(double noise) { return -2.0f * noise * 30; }
 
 int main()
 {
+    // create world, create scene by passing in world to it. Render scene with "Scene.render".
     Scene scene;
 
     for (int x = 0; x < 100; x++)
