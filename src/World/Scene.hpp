@@ -1,8 +1,8 @@
 #pragma once
+#include "World.hpp"
 #include "../Camera/Camera.hpp"
 #include "../Graphics/GraphicsManager.hpp"
 #include "../GLFW/Input.hpp"
-#include "World.hpp";
 #include <memory>
 
 class Scene

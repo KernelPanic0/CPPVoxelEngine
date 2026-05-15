@@ -8,6 +8,11 @@ Scene::Scene(World world)
     ImGui::CreateContext();
     // this passes in the raw pointer. Bypasses the shared/unique pointer of Camera. This may need to be changed at some point.
     glfwSetWindowUserPointer(graphicsManager->GetWindow(), camera.get());
+
+    for (Object obj : world.GetObjects())
+    {
+        AddSceneObject(obj);
+    }
 }
 
 void Scene::AddSceneObject(const Object &object)

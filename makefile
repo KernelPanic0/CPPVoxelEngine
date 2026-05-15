@@ -14,6 +14,7 @@ SRC := ./src/main.cpp \
     ./src/Graphics/GraphicsManager.cpp \
     ./src/Graphics/Buffers.cpp \
     ./src/Graphics/Mesh.cpp \
+	./src/World/World.cpp \
     ./src/World/Scene.cpp \
     ./src/World/Objects/Object.cpp \
     ./src/World/Objects/Cube.cpp \
