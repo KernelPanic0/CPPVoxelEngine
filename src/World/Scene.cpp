@@ -5,7 +5,6 @@ Scene::Scene(World world)
     this->graphicsManager = std::make_unique<GraphicsManager>();
     this->camera = std::make_shared<Camera>();
 
-    ImGui::CreateContext();
     // this passes in the raw pointer. Bypasses the shared/unique pointer of Camera. This may need to be changed at some point.
     glfwSetWindowUserPointer(graphicsManager->GetWindow(), camera.get());
 
@@ -23,12 +22,10 @@ void Scene::AddSceneObject(const Object &object)
 
 void Scene::Render()
 {
-    bool temp = false;
-
     GLFWwindow *window = graphicsManager->GetWindow();
     while (!glfwWindowShouldClose(window))
     {
-        Input::ProcessInput(graphicsManager->GetWindow(), temp);
+        Input::ProcessInput(graphicsManager->GetWindow(), Settings::uiVisible);
         // really this shouldn't be in "Settings".
         Settings::updateDeltaTime();
         graphicsManager->RenderObjects(objectList);

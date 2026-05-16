@@ -6,6 +6,7 @@ namespace Settings
     inline unsigned int SCR_HEIGHT = 600;
     inline float deltaTime = 0.0f;
     inline float lastFrame = 0.0f;
+    inline bool uiVisible = true;
 
     inline void updateDeltaTime()
     {

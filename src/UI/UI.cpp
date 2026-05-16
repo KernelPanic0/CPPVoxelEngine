@@ -4,7 +4,7 @@ UI::UI(std::shared_ptr<Window> &window)
 {
     this->window = window;
     IMGUI_CHECKVERSION();
-    ImGuiContext *ctx = ImGui::CreateContext();
+    ImGui::CreateContext();
 
     ImGuiIO &io = ImGui::GetIO();
     (void)io;
@@ -21,8 +21,8 @@ void UI::Render()
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    // if (visible)
-    ImGui::ShowDemoWindow(&visible);
+    if (Settings::uiVisible)
+        ImGui::ShowDemoWindow(&Settings::uiVisible);
 
     // ImGui rendering
     ImGui::Render();

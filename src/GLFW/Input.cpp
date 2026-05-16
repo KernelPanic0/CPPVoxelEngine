@@ -6,9 +6,9 @@ namespace Input
     float lastX, lastY = 400.0f;
     void MouseCallback(GLFWwindow *window, double xpos, double ypos)
     {
-        // ImGuiIO &io = ImGui::GetIO();
-        // if (io.WantCaptureKeyboard)
-        //     return;
+        ImGuiIO &io = ImGui::GetIO();
+        if (io.WantCaptureKeyboard)
+            return;
 
         float xoffset = xpos - lastX;
         float yoffset = lastY - ypos; // reversed since z-coordinates range from bottom to top
@@ -47,6 +47,10 @@ namespace Input
         lastRightShiftState = currentRightShiftState;
         if (showUi == true)
         {
+            ImGui::GetIO().MouseDrawCursor = false;
+            ImGuiIO &io = ImGui::GetIO();
+            (void)io;
+            io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange; // Enable Keyboard Controls
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
         else
