@@ -28,11 +28,9 @@ void Scene::Render()
     GLFWwindow *window = graphicsManager->GetWindow();
     while (!glfwWindowShouldClose(window))
     {
-        // sometimes there is a bug where you can only move the camera view up and down.
         Input::ProcessInput(graphicsManager->GetWindow(), temp);
         // really this shouldn't be in "Settings".
         Settings::updateDeltaTime();
-        // camera->
         graphicsManager->RenderObjects(objectList);
     }
 }

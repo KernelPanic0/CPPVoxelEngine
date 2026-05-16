@@ -7,6 +7,7 @@
 #include "../GLFW/Window.hpp"
 #include "../misc/stb_image.h"
 #include <unordered_map>
+#include <UI/UI.hpp>
 
 struct SceneObject
 {
@@ -20,10 +21,11 @@ struct SceneObject
 class GraphicsManager
 {
 private:
-    std::unique_ptr<Window> window;
+    std::shared_ptr<Window> window;
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
     std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
+    UI ui;
 
     // std::unique_ptr<Shader *> activeShader;
 

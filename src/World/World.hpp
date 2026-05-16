@@ -4,7 +4,7 @@
 #include "../../includes/PerlinNoise.hpp"
 
 // noise
-std::random_device rd;
+inline std::random_device rd;
 const siv::PerlinNoise::seed_type seed = rd();
 
 const siv::PerlinNoise perlin{seed};
