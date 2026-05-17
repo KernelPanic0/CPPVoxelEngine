@@ -25,14 +25,14 @@ private:
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
     std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
-    UI ui;
+    std::unique_ptr<UI> ui;
 
     // std::unique_ptr<Shader *> activeShader;
 
     unsigned int GenerateTexture(std::string path);
 
 public:
-    GraphicsManager();
+    GraphicsManager(std::shared_ptr<Camera> camera);
     ~GraphicsManager();
     SceneObject CreateSceneObject(Object object);
     void RenderObjects(const std::vector<SceneObject> &objectList); // TEMPORARY TEST

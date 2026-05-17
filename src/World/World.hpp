@@ -16,6 +16,7 @@ class World
 private:
     std::vector<Object> objects;
     void GenerateChunks();
+    int renderDistance = 10;
 
 public:
     World();

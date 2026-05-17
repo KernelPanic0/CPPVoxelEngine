@@ -2,7 +2,10 @@
 
 UI::UI(std::shared_ptr<Window> &window)
 {
-    this->window = window;
+    this->pWindow = window;
+    Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
+    this->camera = camera;
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
@@ -22,12 +25,20 @@ void UI::Render()
     ImGui::NewFrame();
 
     if (Settings::uiVisible)
-        ImGui::ShowDemoWindow(&Settings::uiVisible);
+    {
+        ImGui::Text("Hello this is a test %d", 123);
+        // std::cout << camera->cameraPos.x << "\n";
+        ImGui::Text("Camera position: ");
+        ImGui::Text("x: %f", camera->cameraPos.x);
+        ImGui::Text("y: %f", camera->cameraPos.y);
+        ImGui::Text("z: %f", camera->cameraPos.z);
+    }
+    // ImGui::ShowDemoWindow(&Settings::uiVisible);
 
     // ImGui rendering
     ImGui::Render();
     int display_w, display_h;
-    glfwGetFramebufferSize(window->window, &display_w, &display_h);
+    glfwGetFramebufferSize(pWindow->window, &display_w, &display_h);
     glViewport(0, 0, display_w, display_h);
     // ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     // glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);

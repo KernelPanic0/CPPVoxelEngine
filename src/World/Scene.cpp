@@ -2,11 +2,10 @@
 
 Scene::Scene(World world)
 {
-    this->graphicsManager = std::make_unique<GraphicsManager>();
     this->camera = std::make_shared<Camera>();
-
     // this passes in the raw pointer. Bypasses the shared/unique pointer of Camera. This may need to be changed at some point.
-    glfwSetWindowUserPointer(graphicsManager->GetWindow(), camera.get());
+
+    this->graphicsManager = std::make_unique<GraphicsManager>(camera);
 
     for (Object obj : world.GetObjects())
     {

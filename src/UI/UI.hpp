@@ -1,3 +1,4 @@
+#pragma once
 #include "../includes/imgui/imgui.h"
 #include "../includes/imgui/imgui_impl_glfw.h"
 #include "../includes/imgui/imgui_impl_opengl3.h"
@@ -8,7 +9,8 @@ class UI
 {
 private:
     bool visible = true;
-    std::shared_ptr<Window> window;
+    std::shared_ptr<Window> pWindow;
+    Camera *camera;
 
 public:
     UI(std::shared_ptr<Window> &window);

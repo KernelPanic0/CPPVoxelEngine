@@ -1,5 +1,5 @@
 #include "GraphicsManager.hpp"
-GraphicsManager::GraphicsManager() : window(std::make_shared<Window>()), ui(window)
+GraphicsManager::GraphicsManager(std::shared_ptr<Camera> camera) : window(std::make_shared<Window>())
 {
     shader = std::make_unique<Shader>("./src/Graphics/Shaders/shader.vert", "./src/Graphics/Shaders/shader.frag");
     lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/shader_water.vert", "./src/Graphics/Shaders/shader_water.frag");
@@ -20,6 +20,8 @@ GraphicsManager::GraphicsManager() : window(std::make_shared<Window>()), ui(wind
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glfwSetWindowUserPointer(window->window, camera.get());
+    this->ui = std::make_unique<UI>(window);
 }
 
 GraphicsManager::~GraphicsManager()
@@ -124,7 +126,7 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
     }
 
-    ui.Render();
+    ui->Render();
     glfwSwapBuffers(window->window);
 }
 
