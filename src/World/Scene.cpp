@@ -1,10 +1,8 @@
 #include "Scene.hpp"
 
-Scene::Scene(World world)
+Scene::Scene(World world) : world(std::make_unique<World>(world))
 {
     this->camera = std::make_shared<Camera>();
-    // this passes in the raw pointer. Bypasses the shared/unique pointer of Camera. This may need to be changed at some point.
-
     this->graphicsManager = std::make_unique<GraphicsManager>(camera);
 
     for (Object obj : world.GetObjects())
@@ -24,6 +22,12 @@ void Scene::Render()
     GLFWwindow *window = graphicsManager->GetWindow();
     while (!glfwWindowShouldClose(window))
     {
+        objectList.clear();
+        for (Object obj : world->GetChunksForCameraPosition(camera->cameraPos.x, camera->cameraPos.z).objects)
+        {
+            AddSceneObject(obj);
+        }
+
         Input::ProcessInput(graphicsManager->GetWindow(), Settings::uiVisible);
         // really this shouldn't be in "Settings".
         Settings::updateDeltaTime();

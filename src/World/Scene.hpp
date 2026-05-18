@@ -10,6 +10,7 @@ class Scene
     std::vector<SceneObject> objectList;
     std::unique_ptr<GraphicsManager> graphicsManager;
     std::shared_ptr<Camera> camera;
+    std::unique_ptr<World> world;
 
 public:
     Scene(World world);
