@@ -21,7 +21,12 @@ Chunk World::GetChunksForCameraPosition(int x, int z)
         }
     }
 
-    return chunks[{currentChunkX, currentChunkZ}];
+    auto it = chunks.find({currentChunkX, currentChunkZ});
+    if (it != chunks.end())
+    {
+        return it->second;
+    }
+    return Chunk(currentChunkX, currentChunkZ);
 }
 
 void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
@@ -34,7 +39,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
         for (int z = 0; z < chunkSize; z++)
         {
             int xOffset = x + chunkSize * chunkX;
-            int zOffset = x + chunkSize * chunkX;
+            int zOffset = z + chunkSize * chunkZ;
             int y = yTransform(calculateNoise(xOffset, zOffset));
 
             // Pattern: when a neighbour is 1 below, shade the bottom corners of the side face facing it.
@@ -43,7 +48,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
             int dy = 0;
 
             // +X neighbour
-            dy = y - yTransform(calculateNoise(xOffset + 1, z));
+            dy = y - yTransform(calculateNoise(xOffset + 1, zOffset));
             if (dy == 1) // 1 below -> shade +xOffset face bottom (vertices 6, 7)
             {
                 vertexShadingMap[{6, Face::PosX}] = 1;
@@ -56,7 +61,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
             }
 
             // -xOffset neighbour
-            dy = y - yTransform(calculateNoise(xOffset - 1, z));
+            dy = y - yTransform(calculateNoise(xOffset - 1, zOffset));
             if (dy == 1) // shade -xOffset face bottom (vertices 4, 5)
             {
                 vertexShadingMap[{4, Face::NegX}] = 1;
@@ -69,7 +74,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
             }
 
             // +zOffsetneighbour
-            dy = y - yTransform(calculateNoise(x, zOffset + 1));
+            dy = y - yTransform(calculateNoise(xOffset, zOffset + 1));
             if (dy == 1) // shade +zOffsetface bottom (vertices 4, 7)
             {
                 vertexShadingMap[{4, Face::PosZ}] = 1;
@@ -82,7 +87,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
             }
 
             // -zOffsetneighbour
-            dy = y - yTransform(calculateNoise(x, zOffset - 1));
+            dy = y - yTransform(calculateNoise(xOffset, zOffset - 1));
             if (dy == 1) // shade -zOffsetface bottom (vertices 5, 6)
             {
                 vertexShadingMap[{5, Face::NegZ}] = 1;
@@ -116,7 +121,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
             if (dy == -1)
                 vertexShadingMap[{1, Face::PosY}] = 1;
 
-            Cube c(glm::vec3(x, y, z), "./assets/grass.jpg", vertexShadingMap);
+            Cube c(glm::vec3(xOffset, y, zOffset), "./assets/grass.jpg", vertexShadingMap);
             chunk.objects.push_back(c);
         }
     }
@@ -124,7 +129,7 @@ void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
     chunks.insert({chunk.coords, chunk});
 }
 
-// std::vector<Object> World::GetObjects() // thin wrapper around the objects member to make sure objects cant be modified from outside
-// {
-//     // return objects;
-// }
+std::vector<Object> World::GetObjects() // thin wrapper around the objects member to make sure objects cant be modified from outside
+{
+    // return objects;
+}

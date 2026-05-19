@@ -23,8 +23,7 @@ struct ChunkCoords
 struct Chunk
 {
     ChunkCoords coords;
-    Chunk(int _x, int _z) { coords.x = _x,
-                            coords.z = _z; };
+    Chunk(int _x, int _z) { coords.x = _x, coords.z = _z; };
     std::vector<Object> objects;
 };
 
@@ -44,8 +43,8 @@ private:
     std::unordered_map<ChunkCoords, Chunk, ChunkCoordHash> chunks; // Might actually be redundant because Chunk already holds Chunkcoords
     // std::map<std::pair<int, int>, Object> chunkObjects; // chunkx, chunkz, and the associated chunk
     void GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC);
-    int renderDistance = 10;
-    int chunkSize = 10;
+    int renderDistance = 1;
+    int chunkSize = 40;
 
 public:
     World();

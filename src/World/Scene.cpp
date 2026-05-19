@@ -1,11 +1,11 @@
 #include "Scene.hpp"
 
-Scene::Scene(World world) : world(std::make_unique<World>(world))
+Scene::Scene(World world_) : world(std::make_unique<World>(world_))
 {
     this->camera = std::make_shared<Camera>();
     this->graphicsManager = std::make_unique<GraphicsManager>(camera);
 
-    for (Object obj : world.GetObjects())
+    for (Object obj : world->GetChunksForCameraPosition(camera->cameraPos.x, camera->cameraPos.z).objects)
     {
         AddSceneObject(obj);
     }
