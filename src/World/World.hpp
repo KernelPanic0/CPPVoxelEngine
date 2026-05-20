@@ -41,13 +41,12 @@ class World
 {
 private:
     std::unordered_map<ChunkCoords, Chunk, ChunkCoordHash> chunks; // Might actually be redundant because Chunk already holds Chunkcoords
-    // std::map<std::pair<int, int>, Object> chunkObjects; // chunkx, chunkz, and the associated chunk
     void GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC);
-    int renderDistance = 1;
-    int chunkSize = 40;
+    int renderDistance = 3;
+    int chunkSize = 10;
 
 public:
     World();
-    Chunk GetChunksForCameraPosition(int x, int z);
+    Chunk GetChunksForCameraPosition(double x, double z);
     std::vector<Object> GetObjects();
 };

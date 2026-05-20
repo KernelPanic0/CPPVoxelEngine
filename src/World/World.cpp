@@ -5,21 +5,23 @@ World::World()
     GenerateChunks(0, 0, 0, 0);
 }
 
-Chunk World::GetChunksForCameraPosition(int x, int z)
+Chunk World::GetChunksForCameraPosition(double x, double z)
 {
     int currentChunkX = static_cast<int>(std::floor(x / chunkSize));
     int currentChunkZ = static_cast<int>(std::floor(z / chunkSize));
 
-    for (int dx = -renderDistance; dx < renderDistance; dx++)
-    {
-        for (int dz = -renderDistance; dz < renderDistance; dz++)
-        {
-            int chunkX = currentChunkX + dx;
-            int chunkZ = currentChunkZ + dz;
+    std::cout << std::ceil(x / chunkSize) << std::endl;
 
-            GenerateChunks(chunkX, chunkZ, currentChunkX, currentChunkZ);
-        }
-    }
+    // for (int dx = -renderDistance; dx < renderDistance; dx++)
+    // {
+    //     for (int dz = -renderDistance; dz < renderDistance; dz++)
+    //     {
+    //         int chunkX = currentChunkX + dx;
+    //         int chunkZ = currentChunkZ + dz;
+
+    GenerateChunks(currentChunkX, currentChunkZ, currentChunkX, currentChunkZ);
+    //     }
+    // }
 
     auto it = chunks.find({currentChunkX, currentChunkZ});
     if (it != chunks.end())
@@ -31,9 +33,8 @@ Chunk World::GetChunksForCameraPosition(int x, int z)
 
 void World::GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC)
 {
-    // int currentChunkX = static_cast<int>(std::floor(cameraPos.x / chunkSize));
-    // int currentChunkZ = static_cast<int>(std::floor(cameraPos.z / chunkSize));
     Chunk chunk(chunkX, chunkZ);
+
     for (int x = 0; x < chunkSize; x++)
     {
         for (int z = 0; z < chunkSize; z++)
