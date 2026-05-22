@@ -40,13 +40,15 @@ struct ChunkCoordHash
 class World
 {
 private:
-    std::unordered_map<ChunkCoords, Chunk, ChunkCoordHash> chunks; // Might actually be redundant because Chunk already holds Chunkcoords
-    void GenerateChunks(int chunkX, int chunkZ, int chunkXC, int chunkZC);
-    int renderDistance = 3;
+    int renderDistance = 3; // Number of chunks to render in each direction
     int chunkSize = 10;
+
+    std::unordered_map<ChunkCoords, Chunk, ChunkCoordHash> chunks; // Might actually be redundant because Chunk already holds Chunkcoords
+    void GenerateChunk(int chunkX, int chunkZ);
+    void ApplyShadingMap(VertexShadingMap &sm, int blockX, int blockY, int blockZ);
 
 public:
     World();
-    Chunk GetChunksForCameraPosition(double x, double z);
+    std::vector<Object> GetChunkObjectsForCameraPosition(double x, double z);
     std::vector<Object> GetObjects();
 };
