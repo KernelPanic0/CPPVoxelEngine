@@ -41,90 +41,10 @@ std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z)
     return objects;
 }
 
-void World::ApplyShadingMap(VertexShadingMap &sm, int blockX, int blockY, int blockZ)
-{
-    // Pattern: when a neighbour is 1 below, shade the bottom corners of the side face facing it.
-    //          when a neighbour is 1 above, shade the top face's edge corners closest to it.
-    int dy = 0;
-
-    // +X neighbour
-    dy = blockY - yTransform(calculateNoise(blockX + 1, blockZ));
-    if (dy == 1) // 1 below -> shade +blockX face bottom (vertices 6, 7)
-    {
-        sm[{6, Face::PosX}] = 1;
-        sm[{7, Face::PosX}] = 1;
-    }
-    else if (dy == -1) // 1 above -> shade +Y face's +blockX edge (vertices 2, 3)
-    {
-        sm[{2, Face::PosY}] = 1;
-        sm[{3, Face::PosY}] = 1;
-    }
-
-    // -blockX neighbour
-    dy = blockY - yTransform(calculateNoise(blockX - 1, blockZ));
-    if (dy == 1) // shade -blockX face bottom (vertices 4, 5)
-    {
-        sm[{4, Face::NegX}] = 1;
-        sm[{5, Face::NegX}] = 1;
-    }
-    else if (dy == -1) // shade +Y face's -blockX edge (vertices 0, 1)
-    {
-        sm[{0, Face::PosY}] = 1;
-        sm[{1, Face::PosY}] = 1;
-    }
-
-    // +blockZneighbour
-    dy = blockY - yTransform(calculateNoise(blockX, blockZ + 1));
-    if (dy == 1) // shade +blockZface bottom (vertices 4, 7)
-    {
-        sm[{4, Face::PosZ}] = 1;
-        sm[{7, Face::PosZ}] = 1;
-    }
-    else if (dy == -1) // shade +Y face's +blockZedge (vertices 0, 3)
-    {
-        sm[{0, Face::PosY}] = 1;
-        sm[{3, Face::PosY}] = 1;
-    }
-
-    // -blockZneighbour
-    dy = blockY - yTransform(calculateNoise(blockX, blockZ - 1));
-    if (dy == 1) // shade -blockZface bottom (vertices 5, 6)
-    {
-        sm[{5, Face::NegZ}] = 1;
-        sm[{6, Face::NegZ}] = 1;
-    }
-    else if (dy == -1) // shade +Y face's -blockZedge (vertices 1, 2)
-    {
-        sm[{1, Face::PosY}] = 1;
-        sm[{2, Face::PosY}] = 1;
-    }
-
-    // Diagonals: shade a single corner on the top face when the diagonal neighbour is above.
-
-    // +X+blockZdiagonal -> top corner 3
-    dy = blockY - yTransform(calculateNoise(blockX + 1, blockZ + 1));
-    if (dy == -1)
-        sm[{3, Face::PosY}] = 1;
-
-    // +X-blockZdiagonal -> top corner 2
-    dy = blockY - yTransform(calculateNoise(blockX + 1, blockZ - 1));
-    if (dy == -1)
-        sm[{2, Face::PosY}] = 1;
-
-    // -X+blockZdiagonal -> top corner 0
-    dy = blockY - yTransform(calculateNoise(blockX - 1, blockZ + 1));
-    if (dy == -1)
-        sm[{0, Face::PosY}] = 1;
-
-    // -X-blockZdiagonal -> top corner 1
-    dy = blockY - yTransform(calculateNoise(blockX - 1, blockZ - 1));
-    if (dy == -1)
-        sm[{1, Face::PosY}] = 1;
-}
-
 void World::GenerateChunk(int chunkX, int chunkZ)
 {
     Chunk chunk(chunkX, chunkZ);
+    bool hasTree = std::rand() <= 429496729;
 
     for (int x = 0; x < chunkSize; x++)
     {
@@ -132,14 +52,18 @@ void World::GenerateChunk(int chunkX, int chunkZ)
         {
             int xOffset = x + chunkSize * chunkX;
             int zOffset = z + chunkSize * chunkZ;
-            int y = yTransform(calculateNoise(xOffset, zOffset));
+            int y = Settings::yTransform(Settings::calculateNoise(xOffset, zOffset));
 
-            VertexShadingMap vertexShadingMap;
-            ApplyShadingMap(vertexShadingMap, xOffset, y, zOffset);
-
-            Cube c(glm::vec3(xOffset, y, zOffset), "./assets/grass.jpg", vertexShadingMap);
+            Cube c(glm::vec3(xOffset, y, zOffset), "./assets/grass.png");
             chunk.objects.push_back(c);
         }
+    }
+
+    // Currently there is a bug where the tree's AO is accurate respective to its surrounding blocks, but the surrounding blocks' AO isn't. This is because the tree is generated after the blocks
+    if (hasTree)
+    {
+        Tree t(glm::vec3(chunk.objects[0].position.x, chunk.objects[0].position.y + 1, chunk.objects[0].position.z));
+        chunk.PushMultiple(t.objects);
     }
 
     chunks.insert({chunk.coords, chunk});

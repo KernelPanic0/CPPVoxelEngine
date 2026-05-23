@@ -18,6 +18,7 @@ SRC := ./src/main.cpp \
 	./src/World/World.cpp \
     ./src/World/Scene.cpp \
     ./src/World/Objects/Object.cpp \
+    ./src/World/Objects/Structures/Tree.cpp \
     ./src/World/Objects/Cube.cpp \
     ./includes/imgui/imgui.cpp \
     ./includes/imgui/imgui_draw.cpp \
