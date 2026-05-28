@@ -28,111 +28,118 @@ Cube::Cube(glm::vec3 position, std::string _texturePath)
 
     // Cube corners (see Cube.hpp): 0..3 top (front-left, back-left, back-right, front-right),
     //                              4..7 bottom (same order).
+    // Texture is a 4:3 cross unfolding (4 cells wide x 3 cells tall)
+    // y is 0 or 1/3 for bottom face, 1/3 or 2/3 for side faces, 2/3 or 1 for top face
+
+    constexpr float sLo = 1.0f / 3.0f;
+    constexpr float sHi = 2.0f / 3.0f;
+    constexpr float bCtr = 1.0f / 6.0f;
+    constexpr float tCtr = 5.0f / 6.0f;
     // clang-format off
     std::vector<float> verticesT = {
         // Position           // Texture        // Normal             // Shading
 
         // -Z (back) face — perimeter v6 → v5 → v1 → v2, center at (0, 0, -0.5)
-         0.5f, -0.5f, -0.5f,  0.25f,  0.25f,    0.0f,  0.0f, -1.0f,  (float)vs(6, Face::NegZ),
-        -0.5f, -0.5f, -0.5f,  0.5f,   0.25f,    0.0f,  0.0f, -1.0f,  (float)vs(5, Face::NegZ),
+         0.5f, -0.5f, -0.5f,  0.25f,  sLo,      0.0f,  0.0f, -1.0f,  (float)vs(6, Face::NegZ),
+        -0.5f, -0.5f, -0.5f,  0.5f,   sLo,      0.0f,  0.0f, -1.0f,  (float)vs(5, Face::NegZ),
          0.0f,  0.0f, -0.5f,  0.375f, 0.5f,     0.0f,  0.0f, -1.0f,  cNegZ,
 
-        -0.5f, -0.5f, -0.5f,  0.5f,   0.25f,    0.0f,  0.0f, -1.0f,  (float)vs(5, Face::NegZ),
-        -0.5f,  0.5f, -0.5f,  0.5f,   0.75f,    0.0f,  0.0f, -1.0f,  (float)vs(1, Face::NegZ),
+        -0.5f, -0.5f, -0.5f,  0.5f,   sLo,      0.0f,  0.0f, -1.0f,  (float)vs(5, Face::NegZ),
+        -0.5f,  0.5f, -0.5f,  0.5f,   sHi,      0.0f,  0.0f, -1.0f,  (float)vs(1, Face::NegZ),
          0.0f,  0.0f, -0.5f,  0.375f, 0.5f,     0.0f,  0.0f, -1.0f,  cNegZ,
 
-        -0.5f,  0.5f, -0.5f,  0.5f,   0.75f,    0.0f,  0.0f, -1.0f,  (float)vs(1, Face::NegZ),
-         0.5f,  0.5f, -0.5f,  0.25f,  0.75f,    0.0f,  0.0f, -1.0f,  (float)vs(2, Face::NegZ),
+        -0.5f,  0.5f, -0.5f,  0.5f,   sHi,      0.0f,  0.0f, -1.0f,  (float)vs(1, Face::NegZ),
+         0.5f,  0.5f, -0.5f,  0.25f,  sHi,      0.0f,  0.0f, -1.0f,  (float)vs(2, Face::NegZ),
          0.0f,  0.0f, -0.5f,  0.375f, 0.5f,     0.0f,  0.0f, -1.0f,  cNegZ,
 
-         0.5f,  0.5f, -0.5f,  0.25f,  0.75f,    0.0f,  0.0f, -1.0f,  (float)vs(2, Face::NegZ),
-         0.5f, -0.5f, -0.5f,  0.25f,  0.25f,    0.0f,  0.0f, -1.0f,  (float)vs(6, Face::NegZ),
+         0.5f,  0.5f, -0.5f,  0.25f,  sHi,      0.0f,  0.0f, -1.0f,  (float)vs(2, Face::NegZ),
+         0.5f, -0.5f, -0.5f,  0.25f,  sLo,      0.0f,  0.0f, -1.0f,  (float)vs(6, Face::NegZ),
          0.0f,  0.0f, -0.5f,  0.375f, 0.5f,     0.0f,  0.0f, -1.0f,  cNegZ,
 
         // +Z (front) face — perimeter v4 → v7 → v3 → v0, center at (0, 0, 0.5)
-        -0.5f, -0.5f,  0.5f,  0.5f,   0.25f,    0.0f,  0.0f,  1.0f,  (float)vs(4, Face::PosZ),
-         0.5f, -0.5f,  0.5f,  0.25f,  0.25f,    0.0f,  0.0f,  1.0f,  (float)vs(7, Face::PosZ),
+        -0.5f, -0.5f,  0.5f,  0.5f,   sLo,      0.0f,  0.0f,  1.0f,  (float)vs(4, Face::PosZ),
+         0.5f, -0.5f,  0.5f,  0.25f,  sLo,      0.0f,  0.0f,  1.0f,  (float)vs(7, Face::PosZ),
          0.0f,  0.0f,  0.5f,  0.375f, 0.5f,     0.0f,  0.0f,  1.0f,  cPosZ,
 
-         0.5f, -0.5f,  0.5f,  0.25f,  0.25f,    0.0f,  0.0f,  1.0f,  (float)vs(7, Face::PosZ),
-         0.5f,  0.5f,  0.5f,  0.25f,  0.75f,    0.0f,  0.0f,  1.0f,  (float)vs(3, Face::PosZ),
+         0.5f, -0.5f,  0.5f,  0.25f,  sLo,      0.0f,  0.0f,  1.0f,  (float)vs(7, Face::PosZ),
+         0.5f,  0.5f,  0.5f,  0.25f,  sHi,      0.0f,  0.0f,  1.0f,  (float)vs(3, Face::PosZ),
          0.0f,  0.0f,  0.5f,  0.375f, 0.5f,     0.0f,  0.0f,  1.0f,  cPosZ,
 
-         0.5f,  0.5f,  0.5f,  0.25f,  0.75f,    0.0f,  0.0f,  1.0f,  (float)vs(3, Face::PosZ),
-        -0.5f,  0.5f,  0.5f,  0.5f,   0.75f,    0.0f,  0.0f,  1.0f,  (float)vs(0, Face::PosZ),
+         0.5f,  0.5f,  0.5f,  0.25f,  sHi,      0.0f,  0.0f,  1.0f,  (float)vs(3, Face::PosZ),
+        -0.5f,  0.5f,  0.5f,  0.5f,   sHi,      0.0f,  0.0f,  1.0f,  (float)vs(0, Face::PosZ),
          0.0f,  0.0f,  0.5f,  0.375f, 0.5f,     0.0f,  0.0f,  1.0f,  cPosZ,
 
-        -0.5f,  0.5f,  0.5f,  0.5f,   0.75f,    0.0f,  0.0f,  1.0f,  (float)vs(0, Face::PosZ),
-        -0.5f, -0.5f,  0.5f,  0.5f,   0.25f,    0.0f,  0.0f,  1.0f,  (float)vs(4, Face::PosZ),
+        -0.5f,  0.5f,  0.5f,  0.5f,   sHi,      0.0f,  0.0f,  1.0f,  (float)vs(0, Face::PosZ),
+        -0.5f, -0.5f,  0.5f,  0.5f,   sLo,      0.0f,  0.0f,  1.0f,  (float)vs(4, Face::PosZ),
          0.0f,  0.0f,  0.5f,  0.375f, 0.5f,     0.0f,  0.0f,  1.0f,  cPosZ,
 
         // -X (left) face — perimeter v0 → v1 → v5 → v4, center at (-0.5, 0, 0)
-        -0.5f,  0.5f,  0.5f,  0.25f,  0.75f,   -1.0f,  0.0f,  0.0f,  (float)vs(0, Face::NegX),
-        -0.5f,  0.5f, -0.5f,  0.5f,   0.75f,   -1.0f,  0.0f,  0.0f,  (float)vs(1, Face::NegX),
+        -0.5f,  0.5f,  0.5f,  0.25f,  sHi,     -1.0f,  0.0f,  0.0f,  (float)vs(0, Face::NegX),
+        -0.5f,  0.5f, -0.5f,  0.5f,   sHi,     -1.0f,  0.0f,  0.0f,  (float)vs(1, Face::NegX),
         -0.5f,  0.0f,  0.0f,  0.375f, 0.5f,    -1.0f,  0.0f,  0.0f,  cNegX,
 
-        -0.5f,  0.5f, -0.5f,  0.5f,   0.75f,   -1.0f,  0.0f,  0.0f,  (float)vs(1, Face::NegX),
-        -0.5f, -0.5f, -0.5f,  0.5f,   0.25f,   -1.0f,  0.0f,  0.0f,  (float)vs(5, Face::NegX),
+        -0.5f,  0.5f, -0.5f,  0.5f,   sHi,     -1.0f,  0.0f,  0.0f,  (float)vs(1, Face::NegX),
+        -0.5f, -0.5f, -0.5f,  0.5f,   sLo,     -1.0f,  0.0f,  0.0f,  (float)vs(5, Face::NegX),
         -0.5f,  0.0f,  0.0f,  0.375f, 0.5f,    -1.0f,  0.0f,  0.0f,  cNegX,
 
-        -0.5f, -0.5f, -0.5f,  0.5f,   0.25f,   -1.0f,  0.0f,  0.0f,  (float)vs(5, Face::NegX),
-        -0.5f, -0.5f,  0.5f,  0.25f,  0.25f,   -1.0f,  0.0f,  0.0f,  (float)vs(4, Face::NegX),
+        -0.5f, -0.5f, -0.5f,  0.5f,   sLo,     -1.0f,  0.0f,  0.0f,  (float)vs(5, Face::NegX),
+        -0.5f, -0.5f,  0.5f,  0.25f,  sLo,     -1.0f,  0.0f,  0.0f,  (float)vs(4, Face::NegX),
         -0.5f,  0.0f,  0.0f,  0.375f, 0.5f,    -1.0f,  0.0f,  0.0f,  cNegX,
 
-        -0.5f, -0.5f,  0.5f,  0.25f,  0.25f,   -1.0f,  0.0f,  0.0f,  (float)vs(4, Face::NegX),
-        -0.5f,  0.5f,  0.5f,  0.25f,  0.75f,   -1.0f,  0.0f,  0.0f,  (float)vs(0, Face::NegX),
+        -0.5f, -0.5f,  0.5f,  0.25f,  sLo,     -1.0f,  0.0f,  0.0f,  (float)vs(4, Face::NegX),
+        -0.5f,  0.5f,  0.5f,  0.25f,  sHi,     -1.0f,  0.0f,  0.0f,  (float)vs(0, Face::NegX),
         -0.5f,  0.0f,  0.0f,  0.375f, 0.5f,    -1.0f,  0.0f,  0.0f,  cNegX,
 
         // +X (right) face — perimeter v3 → v7 → v6 → v2, center at (0.5, 0, 0)
-         0.5f,  0.5f,  0.5f,  0.5f,   0.75f,    1.0f,  0.0f,  0.0f,  (float)vs(3, Face::PosX),
-         0.5f, -0.5f,  0.5f,  0.5f,   0.25f,    1.0f,  0.0f,  0.0f,  (float)vs(7, Face::PosX),
+         0.5f,  0.5f,  0.5f,  0.5f,   sHi,      1.0f,  0.0f,  0.0f,  (float)vs(3, Face::PosX),
+         0.5f, -0.5f,  0.5f,  0.5f,   sLo,      1.0f,  0.0f,  0.0f,  (float)vs(7, Face::PosX),
          0.5f,  0.0f,  0.0f,  0.375f, 0.5f,     1.0f,  0.0f,  0.0f,  cPosX,
 
-         0.5f, -0.5f,  0.5f,  0.5f,   0.25f,    1.0f,  0.0f,  0.0f,  (float)vs(7, Face::PosX),
-         0.5f, -0.5f, -0.5f,  0.25f,  0.25f,    1.0f,  0.0f,  0.0f,  (float)vs(6, Face::PosX),
+         0.5f, -0.5f,  0.5f,  0.5f,   sLo,      1.0f,  0.0f,  0.0f,  (float)vs(7, Face::PosX),
+         0.5f, -0.5f, -0.5f,  0.25f,  sLo,      1.0f,  0.0f,  0.0f,  (float)vs(6, Face::PosX),
          0.5f,  0.0f,  0.0f,  0.375f, 0.5f,     1.0f,  0.0f,  0.0f,  cPosX,
 
-         0.5f, -0.5f, -0.5f,  0.25f,  0.25f,    1.0f,  0.0f,  0.0f,  (float)vs(6, Face::PosX),
-         0.5f,  0.5f, -0.5f,  0.25f,  0.75f,    1.0f,  0.0f,  0.0f,  (float)vs(2, Face::PosX),
+         0.5f, -0.5f, -0.5f,  0.25f,  sLo,      1.0f,  0.0f,  0.0f,  (float)vs(6, Face::PosX),
+         0.5f,  0.5f, -0.5f,  0.25f,  sHi,      1.0f,  0.0f,  0.0f,  (float)vs(2, Face::PosX),
          0.5f,  0.0f,  0.0f,  0.375f, 0.5f,     1.0f,  0.0f,  0.0f,  cPosX,
 
-         0.5f,  0.5f, -0.5f,  0.25f,  0.75f,    1.0f,  0.0f,  0.0f,  (float)vs(2, Face::PosX),
-         0.5f,  0.5f,  0.5f,  0.5f,   0.75f,    1.0f,  0.0f,  0.0f,  (float)vs(3, Face::PosX),
+         0.5f,  0.5f, -0.5f,  0.25f,  sHi,      1.0f,  0.0f,  0.0f,  (float)vs(2, Face::PosX),
+         0.5f,  0.5f,  0.5f,  0.5f,   sHi,      1.0f,  0.0f,  0.0f,  (float)vs(3, Face::PosX),
          0.5f,  0.0f,  0.0f,  0.375f, 0.5f,     1.0f,  0.0f,  0.0f,  cPosX,
 
         // -Y (bottom) face — perimeter v5 → v6 → v7 → v4, center at (0, -0.5, 0)
         -0.5f, -0.5f, -0.5f,  0.25f,  0.0f,     0.0f, -1.0f,  0.0f,  (float)vs(5, Face::NegY),
-         0.5f, -0.5f, -0.5f,  0.25f,  0.25f,    0.0f, -1.0f,  0.0f,  (float)vs(6, Face::NegY),
-         0.0f, -0.5f,  0.0f,  0.375f, 0.125f,   0.0f, -1.0f,  0.0f,  cNegY,
+         0.5f, -0.5f, -0.5f,  0.25f,  sLo,      0.0f, -1.0f,  0.0f,  (float)vs(6, Face::NegY),
+         0.0f, -0.5f,  0.0f,  0.375f, bCtr,     0.0f, -1.0f,  0.0f,  cNegY,
 
-         0.5f, -0.5f, -0.5f,  0.25f,  0.25f,    0.0f, -1.0f,  0.0f,  (float)vs(6, Face::NegY),
-         0.5f, -0.5f,  0.5f,  0.5f,   0.25f,    0.0f, -1.0f,  0.0f,  (float)vs(7, Face::NegY),
-         0.0f, -0.5f,  0.0f,  0.375f, 0.125f,   0.0f, -1.0f,  0.0f,  cNegY,
+         0.5f, -0.5f, -0.5f,  0.25f,  sLo,      0.0f, -1.0f,  0.0f,  (float)vs(6, Face::NegY),
+         0.5f, -0.5f,  0.5f,  0.5f,   sLo,      0.0f, -1.0f,  0.0f,  (float)vs(7, Face::NegY),
+         0.0f, -0.5f,  0.0f,  0.375f, bCtr,     0.0f, -1.0f,  0.0f,  cNegY,
 
-         0.5f, -0.5f,  0.5f,  0.5f,   0.25f,    0.0f, -1.0f,  0.0f,  (float)vs(7, Face::NegY),
+         0.5f, -0.5f,  0.5f,  0.5f,   sLo,      0.0f, -1.0f,  0.0f,  (float)vs(7, Face::NegY),
         -0.5f, -0.5f,  0.5f,  0.5f,   0.0f,     0.0f, -1.0f,  0.0f,  (float)vs(4, Face::NegY),
-         0.0f, -0.5f,  0.0f,  0.375f, 0.125f,   0.0f, -1.0f,  0.0f,  cNegY,
+         0.0f, -0.5f,  0.0f,  0.375f, bCtr,     0.0f, -1.0f,  0.0f,  cNegY,
 
         -0.5f, -0.5f,  0.5f,  0.5f,   0.0f,     0.0f, -1.0f,  0.0f,  (float)vs(4, Face::NegY),
         -0.5f, -0.5f, -0.5f,  0.25f,  0.0f,     0.0f, -1.0f,  0.0f,  (float)vs(5, Face::NegY),
-         0.0f, -0.5f,  0.0f,  0.375f, 0.125f,   0.0f, -1.0f,  0.0f,  cNegY,
+         0.0f, -0.5f,  0.0f,  0.375f, bCtr,     0.0f, -1.0f,  0.0f,  cNegY,
 
         // +Y (top) face — perimeter v2 → v1 → v0 → v3, center at (0, 0.5, 0)
          0.5f,  0.5f, -0.5f,  0.25f,  1.0f,     0.0f,  1.0f,  0.0f,  (float)vs(2, Face::PosY),
-        -0.5f,  0.5f, -0.5f,  0.25f,  0.75f,    0.0f,  1.0f,  0.0f,  (float)vs(1, Face::PosY),
-         0.0f,  0.5f,  0.0f,  0.375f, 0.875f,   0.0f,  1.0f,  0.0f,  cPosY,
+        -0.5f,  0.5f, -0.5f,  0.25f,  sHi,      0.0f,  1.0f,  0.0f,  (float)vs(1, Face::PosY),
+         0.0f,  0.5f,  0.0f,  0.375f, tCtr,     0.0f,  1.0f,  0.0f,  cPosY,
 
-        -0.5f,  0.5f, -0.5f,  0.25f,  0.75f,    0.0f,  1.0f,  0.0f,  (float)vs(1, Face::PosY),
-        -0.5f,  0.5f,  0.5f,  0.5f,   0.75f,    0.0f,  1.0f,  0.0f,  (float)vs(0, Face::PosY),
-         0.0f,  0.5f,  0.0f,  0.375f, 0.875f,   0.0f,  1.0f,  0.0f,  cPosY,
+        -0.5f,  0.5f, -0.5f,  0.25f,  sHi,      0.0f,  1.0f,  0.0f,  (float)vs(1, Face::PosY),
+        -0.5f,  0.5f,  0.5f,  0.5f,   sHi,      0.0f,  1.0f,  0.0f,  (float)vs(0, Face::PosY),
+         0.0f,  0.5f,  0.0f,  0.375f, tCtr,     0.0f,  1.0f,  0.0f,  cPosY,
 
-        -0.5f,  0.5f,  0.5f,  0.5f,   0.75f,    0.0f,  1.0f,  0.0f,  (float)vs(0, Face::PosY),
+        -0.5f,  0.5f,  0.5f,  0.5f,   sHi,      0.0f,  1.0f,  0.0f,  (float)vs(0, Face::PosY),
          0.5f,  0.5f,  0.5f,  0.5f,   1.0f,     0.0f,  1.0f,  0.0f,  (float)vs(3, Face::PosY),
-         0.0f,  0.5f,  0.0f,  0.375f, 0.875f,   0.0f,  1.0f,  0.0f,  cPosY,
+         0.0f,  0.5f,  0.0f,  0.375f, tCtr,     0.0f,  1.0f,  0.0f,  cPosY,
 
          0.5f,  0.5f,  0.5f,  0.5f,   1.0f,     0.0f,  1.0f,  0.0f,  (float)vs(3, Face::PosY),
          0.5f,  0.5f, -0.5f,  0.25f,  1.0f,     0.0f,  1.0f,  0.0f,  (float)vs(2, Face::PosY),
-         0.0f,  0.5f,  0.0f,  0.375f, 0.875f,   0.0f,  1.0f,  0.0f,  cPosY,
+         0.0f,  0.5f,  0.0f,  0.375f, tCtr,     0.0f,  1.0f,  0.0f,  cPosY,
     };
 
     std::vector<int> indices = {
