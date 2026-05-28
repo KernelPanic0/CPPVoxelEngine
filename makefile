@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/ -g
+CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/ -MMD -MP
 LDFLAGS := -lglfw -lGL -ldl -lX11 -lpthread -lXrandr -lXi
 BUILD_DIR := ./build
 TARGET := $(BUILD_DIR)/voxel
@@ -53,5 +53,8 @@ clean:
 
 run: all
 	./$(TARGET)
+
+DEPS := $(OBJ:.o=.d)
+-include $(DEPS)
 
 .PHONY: all clean run

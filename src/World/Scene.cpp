@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include <thread>
 
 Scene::Scene(World world_) : world(std::make_unique<World>(world_))
 {
@@ -8,6 +9,12 @@ Scene::Scene(World world_) : world(std::make_unique<World>(world_))
 
 void Scene::AddSceneObject(const Object &object)
 {
+    for (const SceneObject &obj : objectList)
+    {
+        if (obj.object.position == object.position)
+            return;
+    }
+
     SceneObject newSceneObject = graphicsManager->CreateSceneObject(object);
     objectList.push_back(std::move(newSceneObject));
 }
@@ -18,7 +25,6 @@ void Scene::Render()
     while (!glfwWindowShouldClose(window))
     {
         // needs to be done faster
-        objectList.clear();
         for (Object obj : world->GetChunkObjectsForCameraPosition(camera->cameraPos.x, camera->cameraPos.z))
         {
             AddSceneObject(obj);
@@ -27,6 +33,7 @@ void Scene::Render()
         Input::ProcessInput(graphicsManager->GetWindow(), Settings::uiVisible);
         // really this shouldn't be in "Settings".
         Settings::updateDeltaTime();
+
         graphicsManager->RenderObjects(objectList);
     }
 }

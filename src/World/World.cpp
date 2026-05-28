@@ -54,7 +54,7 @@ void World::GenerateChunk(int chunkX, int chunkZ)
             int zOffset = z + chunkSize * chunkZ;
             int y = Settings::yTransform(Settings::calculateNoise(xOffset, zOffset));
 
-            Cube c(glm::vec3(xOffset, y, zOffset), "./assets/grass.png");
+            Cube c(glm::vec3(xOffset, y, zOffset), "./assets/grass2.png");
             chunk.objects.push_back(c);
         }
     }

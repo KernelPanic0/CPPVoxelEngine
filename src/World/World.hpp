@@ -36,12 +36,12 @@ struct ChunkCoordHash
     }
 };
 
+const inline int renderDistance = 2; // Number of chunks to render in each direction
+const inline int chunkSize = 10;
+
 class World
 {
 private:
-    int renderDistance = 3; // Number of chunks to render in each direction
-    int chunkSize = 10;
-
     std::unordered_map<ChunkCoords, Chunk, ChunkCoordHash> chunks; // Might actually be redundant because Chunk already holds Chunkcoords
     void GenerateChunk(int chunkX, int chunkZ);
 

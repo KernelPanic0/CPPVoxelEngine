@@ -35,7 +35,7 @@ public:
     GraphicsManager(std::shared_ptr<Camera> camera);
     ~GraphicsManager();
     SceneObject CreateSceneObject(Object object);
-    void RenderObjects(const std::vector<SceneObject> &objectList); // TEMPORARY TEST
+    void RenderObjects(const std::vector<SceneObject> &objectList);
     // I want the main loop to be inside of "Scene", as it would allow for registering input and controlling the camera,
     // but instantiating the window in the Scene doesn't make sense.
     GLFWwindow *GetWindow() const;
