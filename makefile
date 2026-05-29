@@ -7,23 +7,24 @@ TARGET := $(BUILD_DIR)/voxel
 SRC := ./src/main.cpp \
     ./includes/glad/glad.c \
     ./src/misc/stb_image.cpp \
-    ./src/shader_util.cpp \
+    ./src/misc/shader_util.cpp \
     ./src/GLFW/Window.cpp \
     ./src/Camera/Camera.cpp \
     ./src/GLFW/Input.cpp \
-    ./src/Graphics/GraphicsManager.cpp \
-    ./src/Graphics/Buffers.cpp \
-    ./src/Graphics/Mesh.cpp \
+	./src/Engine/Engine.cpp \
+    ./src/Engine/Graphics/GraphicsManager.cpp \
+    ./src/Engine/Graphics/Buffers.cpp \
+    ./src/Engine/Graphics/Mesh.cpp \
     ./src/UI/UI.cpp \
 	./src/World/World.cpp \
-    ./src/World/Scene.cpp \
+    ./src/Engine/Scene.cpp \
     ./src/World/Objects/Object.cpp \
     ./src/World/Objects/Structures/Tree.cpp \
     ./src/World/Objects/Cube.cpp \
     ./includes/imgui/imgui.cpp \
     ./includes/imgui/imgui_draw.cpp \
     ./includes/imgui/imgui_demo.cpp \
-    ./includes/imgui/imgui_tables.cpp \
+    ./includes/imgui/imgui_tables.cpp \j
     ./includes/imgui/imgui_widgets.cpp \
     ./includes/imgui/imgui_impl_glfw.cpp \
     ./includes/imgui/imgui_impl_opengl3.cpp

@@ -2,14 +2,14 @@
 #include <vector>
 #include "../includes/glad/glad.h"
 #include "Buffers.hpp"
-#include "../World/Objects/Object.hpp"
+#include "../../World/Objects/Object.hpp"
 #include "memory"
-#include "../GLFW/Window.hpp"
-#include "../misc/stb_image.h"
+#include "../../GLFW/Window.hpp"
+#include "../../misc/stb_image.h"
 #include <unordered_map>
 #include <UI/UI.hpp>
 
-struct SceneObject
+struct Renderable
 {
     Object object;
     std::unique_ptr<VertexArray> vao;
@@ -21,22 +21,16 @@ struct SceneObject
 class GraphicsManager
 {
 private:
-    std::shared_ptr<Window> window;
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
     std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
     std::unique_ptr<UI> ui;
 
-    // std::unique_ptr<Shader *> activeShader;
-
     unsigned int GenerateTexture(std::string path);
 
 public:
-    GraphicsManager(std::shared_ptr<Camera> camera);
+    GraphicsManager();
     ~GraphicsManager();
-    SceneObject CreateSceneObject(Object object);
-    void RenderObjects(const std::vector<SceneObject> &objectList);
-    // I want the main loop to be inside of "Scene", as it would allow for registering input and controlling the camera,
-    // but instantiating the window in the Scene doesn't make sense.
-    GLFWwindow *GetWindow() const;
+    Renderable CreateRenderable(Object object);
+    void RenderObjects(const std::vector<Renderable> &objectList);
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Graphics/Mesh.hpp"
+#include "../../Engine/Graphics/Mesh.hpp"
 
 struct ObjectAttribute
 {

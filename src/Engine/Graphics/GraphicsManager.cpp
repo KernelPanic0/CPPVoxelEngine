@@ -1,5 +1,5 @@
 #include "GraphicsManager.hpp"
-GraphicsManager::GraphicsManager(std::shared_ptr<Camera> camera) : window(std::make_shared<Window>())
+GraphicsManager::GraphicsManager()
 {
     shader = std::make_unique<Shader>("./src/Graphics/Shaders/shader.vert", "./src/Graphics/Shaders/shader.frag");
     lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/shader_water.vert", "./src/Graphics/Shaders/shader_water.frag");
@@ -20,17 +20,15 @@ GraphicsManager::GraphicsManager(std::shared_ptr<Camera> camera) : window(std::m
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glfwSetWindowUserPointer(window->window, camera.get());
     this->ui = std::make_unique<UI>(window);
 }
 
 GraphicsManager::~GraphicsManager()
 {
     shader.reset();
-    window.reset();
 }
 
-SceneObject GraphicsManager::CreateSceneObject(Object object)
+Renderable GraphicsManager::CreateRenderable(Object object)
 {
     std::unique_ptr<VertexArray> vao = std::make_unique<VertexArray>(); // Objects with the same mesh and layout (attributes/foormat) should share a VAO for optimal performance. This needs to be changed.
     std::unique_ptr<VertexBuffer> vbo = std::make_unique<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
@@ -71,37 +69,27 @@ SceneObject GraphicsManager::CreateSceneObject(Object object)
         }
     }
 
-    SceneObject newSceneObject = {
+    Renderable newRenderable = {
         object,
         std::move(vao),
         std::move(vbo),
         std::move(ebo),
         textureId};
-    return newSceneObject;
+    return newRenderable;
 }
 
-void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) // TEMPORARY TEST
+void GraphicsManager::RenderObjects(const std::vector<Renderable> &objectList) // TEMPORARY TEST
 {
     glClearColor(0.09f, 0.09f, 0.43f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (const SceneObject &object : objectList)
+    for (const Renderable &object : objectList)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, object.textureId);
         object.vao->Bind();
 
-        glm::mat4 view = glm::mat4(1.0f); // init identity matrix first
-        glm::mat4 projection = glm::mat4(1.0f);
-
-        GLint m_viewport[4];
-        glGetIntegerv(GL_VIEWPORT, m_viewport);
-
-        projection = glm::perspective(glm::radians(45.0f), (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
-
-        Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
-
-        view = glm::lookAt(camera->cameraPos, camera->cameraPos + camera->cameraFront, camera->cameraUp);
+        Camera *pCamera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
@@ -109,18 +97,18 @@ void GraphicsManager::RenderObjects(const std::vector<SceneObject> &objectList) 
         if (object.object.position.y < -40)
         {
             lightShader->use();
-            lightShader->setMat4("projection", projection);
-            lightShader->setMat4("view", view);
+            lightShader->setMat4("projection", pCamera->GetProjection());
+            lightShader->setMat4("view", pCamera->GetView());
             lightShader->setMat4("model", model);
             lightShader->setFloat("time", glfwGetTime());
         }
         else
         {
             shader->use();
-            shader->setMat4("projection", projection);
-            shader->setMat4("view", view);
+            shader->setMat4("projection", pCamera->GetProjection());
+            shader->setMat4("view", pCamera->GetView());
             shader->setMat4("model", model);
-            shader->setVec3("camPos", camera->cameraPos);
+            shader->setVec3("camPos", pCamera->cameraPos);
         }
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
@@ -148,6 +136,7 @@ unsigned int GraphicsManager::GenerateTexture(std::string path)
 
     // This might need to be optimised later as not all textures need to be RGBA.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+    // temporary disabled because of edge-bleeding bug
     // glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(textureData);

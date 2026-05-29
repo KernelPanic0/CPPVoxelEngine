@@ -5,6 +5,14 @@ World::World()
     GenerateChunk(0, 0);
 }
 
+std::pair<int, int> World::GetChunkCoordinatesFromCameraPosition(double x, double z)
+{
+    int currentChunkX = static_cast<int>(std::floor(x / chunkSize));
+    int currentChunkZ = static_cast<int>(std::floor(z / chunkSize));
+
+    return std::pair(currentChunkX, currentChunkZ);
+}
+
 std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z)
 {
     int currentChunkX = static_cast<int>(std::floor(x / chunkSize));
@@ -44,7 +52,7 @@ std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z)
 void World::GenerateChunk(int chunkX, int chunkZ)
 {
     Chunk chunk(chunkX, chunkZ);
-    bool hasTree = std::rand() <= 429496729;
+    bool hasTree = std::rand() <= 429496729; // randomly decide whether tree should be generated
 
     for (int x = 0; x < chunkSize; x++)
     {

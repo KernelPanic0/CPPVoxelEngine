@@ -1,10 +1,8 @@
-#include "World/Scene.hpp"
-#include "GLFW/Window.hpp"
+#include "./Engine/Engine.hpp"
 
 int main()
 {
-    World w;
-    Scene scene(w);
+    Engine engine();
 
-    scene.Render();
+    engine.Render();
 }

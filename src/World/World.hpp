@@ -37,7 +37,7 @@ struct ChunkCoordHash
 };
 
 const inline int renderDistance = 2; // Number of chunks to render in each direction
-const inline int chunkSize = 10;
+const inline int chunkSize = 16;
 
 class World
 {
@@ -49,4 +49,5 @@ public:
     World();
     std::vector<Object> GetChunkObjectsForCameraPosition(double x, double z);
     std::vector<Object> GetObjects();
+    std::pair<int, int> World::GetChunkCoordinatesFromCameraPosition(double x, double z);
 };
