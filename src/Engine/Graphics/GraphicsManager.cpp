@@ -143,8 +143,3 @@ unsigned int GraphicsManager::GenerateTexture(std::string path)
 
     return textureToGen;
 }
-
-GLFWwindow *GraphicsManager::GetWindow() const
-{
-    return window->window; // bad because bypasses unique_ptr
-}

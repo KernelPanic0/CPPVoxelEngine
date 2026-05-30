@@ -8,7 +8,7 @@ void Engine::RenderFrame()
 
     // belongs in scene
     // needs to be done faster
-    for (Object obj : pWorld->GetChunkObjectsForCameraPosition(pCamera->cameraPos.x, pCamera->cameraPos.z))
+    for (Object obj : pScene->GetObjectsForRendering())
     {
         AddRenderable(obj);
     }
@@ -44,5 +44,6 @@ void Engine::MainLoop()
         Settings::updateDeltaTime();
 
         // render
+        RenderFrame();
     }
 }

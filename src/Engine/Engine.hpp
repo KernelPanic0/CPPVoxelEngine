@@ -16,5 +16,4 @@ public:
     Engine();
     void RenderFrame();
     void MainLoop();
-    void AddSceneObject(std::vector<SceneObject> &objectList, const Object &object);
 };

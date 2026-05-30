@@ -5,13 +5,7 @@ Scene::Scene(World world_) : pWorld(std::make_unique<World>(world_)), pCamera(st
     // glfwSetWindowUserPointer(window->window, camera.get());
 }
 
-void Scene::RenderFrame()
+std::vector<Object> Scene::GetObjectsForRendering()
 {
-    // needs to be done faster
-    for (Object obj : pWorld->GetChunkObjectsForCameraPosition(pCamera->cameraPos.x, pCamera->cameraPos.z))
-    {
-        AddSceneObject(obj);
-    }
-
-    graphicsManager->RenderObjects(objectList);
+    return pWorld->GetChunkObjectsForCameraPosition(pCamera->cameraPos.x, pCamera->cameraPos.z);
 }

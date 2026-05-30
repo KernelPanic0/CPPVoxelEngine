@@ -27,10 +27,12 @@ private:
     std::unique_ptr<UI> ui;
 
     unsigned int GenerateTexture(std::string path);
+    Renderable CreateRenderable(Object object);
 
 public:
     GraphicsManager();
     ~GraphicsManager();
     Renderable CreateRenderable(Object object);
+    void AddRenderable(std::vector<Renderable> &objectList, const Object &object);
     void RenderObjects(const std::vector<Renderable> &objectList);
 };
