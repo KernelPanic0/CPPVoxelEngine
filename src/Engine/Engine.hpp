@@ -7,10 +7,10 @@
 class Engine
 {
 private:
-    std::unique_ptr<Scene> pScene;
     std::shared_ptr<Window> pWindow;
     std::shared_ptr<GraphicsManager> pGraphicsManager;
-    std::shared_ptr<Camera> pCamera;
+    std::unique_ptr<Scene> pScene;
+    std::unique_ptr<UI> UserInterface;
 
 public:
     Engine();

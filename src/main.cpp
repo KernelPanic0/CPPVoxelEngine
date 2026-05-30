@@ -2,7 +2,7 @@
 
 int main()
 {
-    Engine engine();
+    Engine engine;
 
-    engine.Render();
+    engine.MainLoop();
 }

@@ -1,10 +1,10 @@
 #include "UI.hpp"
 
-UI::UI(std::shared_ptr<Window> &window)
+UI::UI(const std::shared_ptr<Window> &window)
 {
     this->pWindow = window;
-    Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
-    this->camera = camera;
+    // Camera *camera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
+    // this->camera = camera;
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -29,9 +29,9 @@ void UI::Render()
         ImGui::Text("Hello this is a test %d", 123);
         // std::cout << camera->cameraPos.x << "\n";
         ImGui::Text("Camera position: ");
-        ImGui::Text("x: %f", camera->cameraPos.x);
-        ImGui::Text("y: %f", camera->cameraPos.y);
-        ImGui::Text("z: %f", camera->cameraPos.z);
+        // ImGui::Text("x: %f", camera->cameraPos.x);
+        // ImGui::Text("y: %f", camera->cameraPos.y);
+        // ImGui::Text("z: %f", camera->cameraPos.z);
     }
     // ImGui::ShowDemoWindow(&Settings::uiVisible);
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "../World/World.hpp"
 #include <algorithm>
+#include "../GLFW/Input.hpp"
 #include <memory>
 
 class Scene
@@ -12,4 +13,6 @@ private:
 public:
     Scene(World world);
     std::vector<Object> GetObjectsForRendering();
+    std::pair<glm::mat4, glm::mat4> GetViewProjection();
+    Camera *GetCamera(); // temporary
 };

@@ -24,7 +24,7 @@ private:
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
     std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
-    std::unique_ptr<UI> ui;
+    std::vector<Renderable> objectRenderCache;
 
     unsigned int GenerateTexture(std::string path);
     Renderable CreateRenderable(Object object);
@@ -32,7 +32,7 @@ private:
 public:
     GraphicsManager();
     ~GraphicsManager();
-    Renderable CreateRenderable(Object object);
-    void AddRenderable(std::vector<Renderable> &objectList, const Object &object);
-    void RenderObjects(const std::vector<Renderable> &objectList);
+    void ClearRenderCache();
+    void AddRenderable(const Object &object);
+    void RenderObjects(const std::pair<glm::mat4, glm::mat4> viewProjection, glm::vec3 cameraPosition, Window &window, UI userInterface);
 };

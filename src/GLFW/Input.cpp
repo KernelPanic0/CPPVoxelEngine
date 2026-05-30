@@ -1,5 +1,6 @@
 #include "Input.hpp"
 #include <iostream>
+#include <memory>
 
 namespace Input
 {

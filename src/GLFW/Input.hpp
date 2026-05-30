@@ -1,7 +1,7 @@
 #pragma once
-#include <GLFW/glfw3.h> // System-installed GLFW
 #include "../includes/imgui/imgui.h"
 #include "Camera/Camera.hpp"
+#include <GLFW/glfw3.h> // System-installed GLFW
 #include "misc/Settings.hpp"
 
 namespace Input

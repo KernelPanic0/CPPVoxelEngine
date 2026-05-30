@@ -24,7 +24,7 @@ SRC := ./src/main.cpp \
     ./includes/imgui/imgui.cpp \
     ./includes/imgui/imgui_draw.cpp \
     ./includes/imgui/imgui_demo.cpp \
-    ./includes/imgui/imgui_tables.cpp \j
+    ./includes/imgui/imgui_tables.cpp \
     ./includes/imgui/imgui_widgets.cpp \
     ./includes/imgui/imgui_impl_glfw.cpp \
     ./includes/imgui/imgui_impl_opengl3.cpp

@@ -49,5 +49,5 @@ public:
     World();
     std::vector<Object> GetChunkObjectsForCameraPosition(double x, double z);
     std::vector<Object> GetObjects();
-    std::pair<int, int> World::GetChunkCoordinatesFromCameraPosition(double x, double z);
+    std::pair<int, int> GetChunkCoordinatesFromCameraPosition(double x, double z);
 };

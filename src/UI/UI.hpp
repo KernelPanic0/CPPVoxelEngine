@@ -13,6 +13,6 @@ private:
     Camera *camera;
 
 public:
-    UI(std::shared_ptr<Window> &window);
+    UI(const std::shared_ptr<Window> &window);
     void Render();
 };

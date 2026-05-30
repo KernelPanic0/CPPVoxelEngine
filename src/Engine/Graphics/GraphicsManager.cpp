@@ -1,8 +1,8 @@
 #include "GraphicsManager.hpp"
 GraphicsManager::GraphicsManager()
 {
-    shader = std::make_unique<Shader>("./src/Graphics/Shaders/shader.vert", "./src/Graphics/Shaders/shader.frag");
-    lightShader = std::make_unique<Shader>("./src/Graphics/Shaders/shader_water.vert", "./src/Graphics/Shaders/shader_water.frag");
+    shader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader.vert", "./src/Engine/Graphics/Shaders/shader.frag");
+    lightShader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader_water.vert", "./src/Engine/Graphics/Shaders/shader_water.frag");
 
     shader->use();
     // shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
@@ -20,7 +20,6 @@ GraphicsManager::GraphicsManager()
     // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    this->ui = std::make_unique<UI>(window);
 }
 
 GraphicsManager::~GraphicsManager()
@@ -78,18 +77,37 @@ Renderable GraphicsManager::CreateRenderable(Object object)
     return newRenderable;
 }
 
-void GraphicsManager::RenderObjects(const std::vector<Renderable> &objectList) // TEMPORARY TEST
+void GraphicsManager::ClearRenderCache()
+{
+    objectRenderCache.clear();
+}
+
+void GraphicsManager::AddRenderable(const Object &object)
+{
+    // erase objects/chunks that are too far away
+    // std::erase_if(objectRenderCache, [&](const Renderable &so)
+    //               { return glm::length(pCamera->cameraPos) - glm::length(so.object.position) > 10; });
+
+    // for (const Renderable &obj : objectRenderCache)
+    // {
+    //     if (obj.object.position == object.position)
+    //         return;
+    // }
+
+    Renderable newRenderable = CreateRenderable(object);
+    objectRenderCache.push_back(std::move(newRenderable));
+}
+
+void GraphicsManager::RenderObjects(const std::pair<glm::mat4, glm::mat4> viewProjection, glm::vec3 cameraPos, Window &window, UI userInterface) // TEMPORARY TEST
 {
     glClearColor(0.09f, 0.09f, 0.43f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (const Renderable &object : objectList)
+    for (const Renderable &object : objectRenderCache)
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, object.textureId);
         object.vao->Bind();
-
-        Camera *pCamera = static_cast<Camera *>(glfwGetWindowUserPointer(window->window));
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
@@ -97,25 +115,25 @@ void GraphicsManager::RenderObjects(const std::vector<Renderable> &objectList) /
         if (object.object.position.y < -40)
         {
             lightShader->use();
-            lightShader->setMat4("projection", pCamera->GetProjection());
-            lightShader->setMat4("view", pCamera->GetView());
+            lightShader->setMat4("projection", viewProjection.second);
+            lightShader->setMat4("view", viewProjection.first);
             lightShader->setMat4("model", model);
             lightShader->setFloat("time", glfwGetTime());
         }
         else
         {
             shader->use();
-            shader->setMat4("projection", pCamera->GetProjection());
-            shader->setMat4("view", pCamera->GetView());
+            lightShader->setMat4("projection", viewProjection.second);
+            lightShader->setMat4("view", viewProjection.first);
             shader->setMat4("model", model);
-            shader->setVec3("camPos", pCamera->cameraPos);
+            shader->setVec3("camPos", cameraPos);
         }
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
     }
 
-    ui->Render();
-    glfwSwapBuffers(window->window);
+    userInterface.Render();
+    glfwSwapBuffers(window.window);
 }
 
 unsigned int GraphicsManager::GenerateTexture(std::string path)
