@@ -18,7 +18,7 @@ UI::UI(const std::shared_ptr<Window> &window)
     ImGui::StyleColorsDark();
 }
 
-void UI::Render()
+void UI::Render(ImTextureID texture)
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -26,14 +26,29 @@ void UI::Render()
 
     if (Settings::uiVisible)
     {
-        ImGui::Text("Hello this is a test %d", 123);
-        // std::cout << camera->cameraPos.x << "\n";
-        ImGui::Text("Camera position: ");
+        ImGui::BeginTabBar("Hi");
+        if (ImGui::BeginTabItem("Info"))
+        {
+            ImGui::Text("Hello this is a test %d", 123);
+            ImGui::Text("Camera position: ");
+
+            ImGui::EndTabItem();
+        }
+        if (ImGui::BeginTabItem("Model Viewer"))
+        {
+            ImGui::Text("Hi");
+            ImGui::Image(texture, ImVec2(320, 240), ImVec2(0, 1), ImVec2(1, 0));
+
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+
+        // // std::cout << camera->cameraPos.x << "\n";
         // ImGui::Text("x: %f", camera->cameraPos.x);
         // ImGui::Text("y: %f", camera->cameraPos.y);
         // ImGui::Text("z: %f", camera->cameraPos.z);
+        // ImGui::ShowDemoWindow(&Settings::uiVisible);
     }
-    // ImGui::ShowDemoWindow(&Settings::uiVisible);
 
     // ImGui rendering
     ImGui::Render();

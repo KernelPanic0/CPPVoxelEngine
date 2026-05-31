@@ -14,5 +14,5 @@ private:
 
 public:
     UI(const std::shared_ptr<Window> &window);
-    void Render();
+    void Render(ImTextureID texture);
 };

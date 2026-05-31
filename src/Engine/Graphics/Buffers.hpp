@@ -39,3 +39,14 @@ public:
     void Bind() const;
     void Unbind() const;
 };
+
+class FrameBuffer
+{
+public:
+    GLuint id;
+    GLuint textureId;
+    FrameBuffer(int width, int height);
+    void Bind() const;
+    void Unbind() const;
+    ~FrameBuffer();
+};

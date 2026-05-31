@@ -28,6 +28,7 @@ private:
 
     unsigned int GenerateTexture(std::string path);
     Renderable CreateRenderable(Object object);
+    FrameBuffer fbo;
 
 public:
     GraphicsManager();

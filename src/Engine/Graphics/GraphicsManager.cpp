@@ -1,5 +1,5 @@
 #include "GraphicsManager.hpp"
-GraphicsManager::GraphicsManager()
+GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400))
 {
     shader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader.vert", "./src/Engine/Graphics/Shaders/shader.frag");
     lightShader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader_water.vert", "./src/Engine/Graphics/Shaders/shader_water.frag");
@@ -132,7 +132,28 @@ void GraphicsManager::RenderObjects(const std::pair<glm::mat4, glm::mat4> viewPr
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
     }
 
-    userInterface.Render();
+    // render model viewer thingy
+    fbo.Bind();
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    objectRenderCache[0].vao->Bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, objectRenderCache[0].textureId);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0, 0, 0));
+
+    shader->use();
+    lightShader->setMat4("projection", glm::perspective(glm::radians(45.0f), (float)4 / 3, 0.1f, 1000.0f));
+    lightShader->setMat4("view", glm::lookAt(glm::vec3(sin(glfwGetTime()) * 3, 1.5, cos(glfwGetTime()) * 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+    shader->setMat4("model", model);
+
+    glDrawArrays(GL_TRIANGLES, 0, objectRenderCache[0].object.mesh.vertices.size() / 8);
+    fbo.Unbind();
+    userInterface.Render((ImTextureID)(intptr_t)fbo.textureId);
+
+    // render everything
     glfwSwapBuffers(window.window);
 }
 
