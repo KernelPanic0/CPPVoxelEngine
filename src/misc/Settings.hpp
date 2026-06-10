@@ -1,5 +1,5 @@
 #pragma once
-#include "../includes/PerlinNoise.hpp"
+#include "../../includes/PerlinNoise.hpp"
 
 namespace Settings
 {

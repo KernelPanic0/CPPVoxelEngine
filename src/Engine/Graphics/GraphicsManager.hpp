@@ -1,13 +1,13 @@
 #pragma once
 #include <vector>
-#include "../includes/glad/glad.h"
+#include "../../../includes/glad/glad.h"
 #include "Buffers.hpp"
 #include "../../World/Objects/Object.hpp"
 #include "memory"
 #include "../../GLFW/Window.hpp"
 #include "../../misc/stb_image.h"
 #include <unordered_map>
-#include <UI/UI.hpp>
+#include "../../UI/UI.hpp"
 
 struct Renderable
 {

@@ -1,8 +1,8 @@
 #pragma once
 #include <random>
 #include <unordered_map>
-#include "World/Objects/Cube.hpp"
-#include "World/Objects/Structures/Tree.hpp"
+#include "Objects/Cube.hpp"
+#include "Objects/Structures/Tree.hpp"
 
 struct ChunkCoords
 {
