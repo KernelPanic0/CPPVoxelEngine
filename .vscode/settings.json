@@ -70,5 +70,5 @@
         "valarray": "cpp",
         "variant": "cpp"
     },
-    "cmake.sourceDirectory": "/home/yarik/Desktop/VoxelEngine2/includes/glm"
+    "cmake.sourceDirectory": "/home/ste/Desktop/VoxelEngine/includes/glm"
 }

@@ -1,8 +1,12 @@
 #include "GraphicsManager.hpp"
 GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400))
 {
-    shader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader.vert", "./src/Engine/Graphics/Shaders/shader.frag");
-    lightShader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader_water.vert", "./src/Engine/Graphics/Shaders/shader_water.frag");
+    shader =
+        std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader.vert",
+                                 "./src/Engine/Graphics/Shaders/shader.frag");
+    lightShader = std::make_unique<Shader>(
+        "./src/Engine/Graphics/Shaders/shader_water.vert",
+        "./src/Engine/Graphics/Shaders/shader_water.frag");
 
     shader->use();
     // shader->setVec3("objectColor", 1.0f, 1.0f, 0.0f);
@@ -16,8 +20,8 @@ GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400))
     glCullFace(GL_BACK);
 
     // Blending
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
@@ -29,7 +33,11 @@ GraphicsManager::~GraphicsManager()
 
 Renderable GraphicsManager::CreateRenderable(Object object)
 {
-    std::unique_ptr<VertexArray> vao = std::make_unique<VertexArray>(); // Objects with the same mesh and layout (attributes/foormat) should share a VAO for optimal performance. This needs to be changed.
+    std::unique_ptr<VertexArray> vao =
+        std::make_unique<VertexArray>(); // Objects with the same mesh and
+                                         // layout (attributes/foormat) should
+                                         // share a VAO for optimal performance.
+                                         // This needs to be changed.
     std::unique_ptr<VertexBuffer> vbo = std::make_unique<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
     std::unique_ptr<ElementBuffer> ebo = std::make_unique<ElementBuffer>((GLuint *)object.mesh.indices.data(), object.mesh.indices.size() * 4);
 
@@ -46,7 +54,9 @@ Renderable GraphicsManager::CreateRenderable(Object object)
     // insert all attributes
     for (int i = 0; i < object.attributes.size(); i++)
     {
-        glVertexAttribPointer(i, object.attributes[i].size, object.attributes[i].type, GL_FALSE, stride, (const GLvoid *)offset);
+        glVertexAttribPointer(i, object.attributes[i].size,
+                              object.attributes[i].type, GL_FALSE, stride,
+                              (const GLvoid *)offset);
         offset += object.attributes[i].size * object.attributes[i].typeSize;
         glEnableVertexAttribArray(i);
     }
@@ -68,12 +78,8 @@ Renderable GraphicsManager::CreateRenderable(Object object)
         }
     }
 
-    Renderable newRenderable = {
-        object,
-        std::move(vao),
-        std::move(vbo),
-        std::move(ebo),
-        textureId};
+    Renderable newRenderable = {object, std::move(vao), std::move(vbo),
+                                std::move(ebo), textureId};
     return newRenderable;
 }
 
@@ -84,24 +90,26 @@ void GraphicsManager::ClearRenderCache()
 
 void GraphicsManager::AddRenderable(const Object &object)
 {
-    // erase objects/chunks that are too far away
-    // std::erase_if(objectRenderCache, [&](const Renderable &so)
-    //               { return glm::length(pCamera->cameraPos) - glm::length(so.object.position) > 10; });
-
-    // for (const Renderable &obj : objectRenderCache)
-    // {
-    //     if (obj.object.position == object.position)
-    //         return;
-    // }
+    // // erase objects/chunks that are too far away
+    // std::erase_if(objectRenderCache,
+    //               [&](const Renderable &so)
+    //               {
+    //                   return glm::length(cameraPosition) -
+    //                              glm::length(so.object.position) >
+    //                          10;
+    //               });
 
     Renderable newRenderable = CreateRenderable(object);
     objectRenderCache.push_back(std::move(newRenderable));
 }
 
-void GraphicsManager::RenderObjects(const std::pair<glm::mat4, glm::mat4> viewProjection, glm::vec3 cameraPos, Window &window, UI userInterface) // TEMPORARY TEST
+void GraphicsManager::RenderObjects(
+    const std::pair<glm::mat4, glm::mat4> viewProjection, glm::vec3 cameraPos,
+    Window &window, UI userInterface) // TEMPORARY TEST
 {
     glClearColor(0.09f, 0.09f, 0.43f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
 
     for (const Renderable &object : objectRenderCache)
     {
@@ -145,11 +153,17 @@ void GraphicsManager::RenderObjects(const std::pair<glm::mat4, glm::mat4> viewPr
     model = glm::translate(model, glm::vec3(0, 0, 0));
 
     shader->use();
-    lightShader->setMat4("projection", glm::perspective(glm::radians(45.0f), (float)4 / 3, 0.1f, 1000.0f));
-    lightShader->setMat4("view", glm::lookAt(glm::vec3(sin(glfwGetTime()) * 3, 1.5, cos(glfwGetTime()) * 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+    lightShader->setMat4(
+        "projection",
+        glm::perspective(glm::radians(45.0f), (float)4 / 3, 0.1f, 1000.0f));
+    lightShader->setMat4("view",
+                         glm::lookAt(glm::vec3(sin(glfwGetTime()) * 3, 1.5,
+                                               cos(glfwGetTime()) * 3),
+                                     glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
     shader->setMat4("model", model);
 
-    glDrawArrays(GL_TRIANGLES, 0, objectRenderCache[0].object.mesh.vertices.size() / 8);
+    glDrawArrays(GL_TRIANGLES, 0,
+                 objectRenderCache[0].object.mesh.vertices.size() / 8);
     fbo.Unbind();
     userInterface.Render((ImTextureID)(intptr_t)fbo.textureId);
 
@@ -161,7 +175,8 @@ unsigned int GraphicsManager::GenerateTexture(std::string path)
 {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *textureData = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+    unsigned char *textureData =
+        stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
 
     unsigned int textureToGen;
     glGenTextures(1, &textureToGen);
@@ -170,13 +185,14 @@ unsigned int GraphicsManager::GenerateTexture(std::string path)
     // set wrapping / filtering options
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    // This might need to be optimised later as not all textures need to be RGBA.
+    // This might need to be optimised later as not all textures need to be
+    // RGBA.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
     // temporary disabled because of edge-bleeding bug
-    // glGenerateMipmap(GL_TEXTURE_2D);
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(textureData);
 

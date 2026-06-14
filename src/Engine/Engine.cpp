@@ -7,15 +7,29 @@ Engine::Engine() : pWindow(std::make_shared<Window>()), pGraphicsManager(std::ma
 
 void Engine::RenderFrame()
 {
-    pGraphicsManager->ClearRenderCache();
+    auto objects = pScene->GetObjectsForRendering();
 
-    // needs to be done faster
-    for (Object obj : pScene->GetObjectsForRendering())
+    std::vector<Object> reconstructedObjects;
+    for (Renderable &ro : pGraphicsManager->objectRenderCache)
     {
-        pGraphicsManager->AddRenderable(obj);
+        reconstructedObjects.push_back(ro.object);
     }
 
-    pGraphicsManager->RenderObjects(pScene->GetViewProjection(), pScene->GetCamera()->cameraPos, *pWindow.get(), *UserInterface.get()); // not good, but function needs to use window, not own it
+    if (reconstructedObjects != objects)
+    {
+        pGraphicsManager->ClearRenderCache();
+
+        for (Object obj : pScene->GetObjectsForRendering())
+        {
+            pGraphicsManager->AddRenderable(obj);
+        }
+    }
+    pGraphicsManager->RenderObjects(
+        pScene->GetViewProjection(), pScene->GetCamera()->cameraPos,
+        *pWindow.get(),
+        *UserInterface
+             .get()); // not good, but function needs to use window, not own it
+    // needs to be done faster
 }
 
 void Engine::MainLoop()

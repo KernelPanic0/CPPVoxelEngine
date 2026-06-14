@@ -13,4 +13,8 @@ struct Mesh
 {
     std::vector<float> vertices;
     std::vector<int> indices;
+
+    bool operator==(const Mesh m) const {
+        return vertices == m.vertices;
+    }
 };

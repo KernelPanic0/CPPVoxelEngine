@@ -26,11 +26,13 @@ void UI::Render(ImTextureID texture)
 
     if (Settings::uiVisible)
     {
+
         ImGui::BeginTabBar("Hi");
         if (ImGui::BeginTabItem("Info"))
         {
             ImGui::Text("Hello this is a test %d", 123);
             ImGui::Text("Camera position: ");
+            ImGui::Text("FPS: %d", (int)(1/Settings::deltaTime));
 
             ImGui::EndTabItem();
         }

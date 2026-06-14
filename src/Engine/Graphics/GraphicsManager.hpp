@@ -1,13 +1,13 @@
 #pragma once
-#include <vector>
 #include "../../../includes/glad/glad.h"
-#include "Buffers.hpp"
-#include "../../World/Objects/Object.hpp"
-#include "memory"
 #include "../../GLFW/Window.hpp"
-#include "../../misc/stb_image.h"
-#include <unordered_map>
 #include "../../UI/UI.hpp"
+#include "../../World/Objects/Object.hpp"
+#include "../../misc/stb_image.h"
+#include "Buffers.hpp"
+#include "memory"
+#include <unordered_map>
+#include <vector>
 
 struct Renderable
 {
@@ -20,17 +20,18 @@ struct Renderable
 
 class GraphicsManager
 {
-private:
+  private:
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
     std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
-    std::vector<Renderable> objectRenderCache;
 
     unsigned int GenerateTexture(std::string path);
     Renderable CreateRenderable(Object object);
     FrameBuffer fbo;
 
-public:
+  public:
+    std::vector<Renderable> objectRenderCache;
+
     GraphicsManager();
     ~GraphicsManager();
     void ClearRenderCache();

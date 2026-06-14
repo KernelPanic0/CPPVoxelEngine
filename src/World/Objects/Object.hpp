@@ -17,4 +17,8 @@ public:
     std::string texturePath;
     Object(Mesh mesh, std::vector<ObjectAttribute> attributes, glm::vec3 position, std::string texturePath = "");
     Object();
+
+    bool operator==(const Object& a) const {
+        return a.mesh == mesh;
+    }
 };
