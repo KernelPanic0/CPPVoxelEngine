@@ -1,45 +1,34 @@
 #include "World.hpp"
 
-World::World()
-{
+World::World() {
     GenerateChunk(0, 0);
 }
 
-std::pair<int, int> World::GetChunkCoordinatesFromCameraPosition(double x, double z)
-{
+std::pair<int, int> World::GetChunkCoordinatesFromCameraPosition(double x, double z) {
     int currentChunkX = static_cast<int>(std::floor(x / chunkSize));
     int currentChunkZ = static_cast<int>(std::floor(z / chunkSize));
 
-    return std::pair(currentChunkX, currentChunkZ);
+    return {currentChunkX, currentChunkZ};
 }
 
-std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z)
-{
-    int currentChunkX = static_cast<int>(std::floor(x / chunkSize));
-    int currentChunkZ = static_cast<int>(std::floor(z / chunkSize));
+std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z) {
+    auto [currentChunkX, currentChunkZ] = GetChunkCoordinatesFromCameraPosition(x, z);
     std::vector<Object> objects;
 
-    for (int dx = -renderDistance; dx < renderDistance; dx++)
-    {
-        for (int dz = -renderDistance; dz < renderDistance; dz++)
-        {
+    for (int dx = -renderDistance; dx < renderDistance; dx++) {
+        for (int dz = -renderDistance; dz < renderDistance; dz++) {
             int chunkX = currentChunkX + dx;
             int chunkZ = currentChunkZ + dz;
 
             GenerateChunk(chunkX, chunkZ);
 
             auto it = chunks.find({chunkX, chunkZ});
-            if (it != chunks.end())
-            {
-                for (Object obj : it->second.objects)
-                {
+            if (it != chunks.end()) {
+                for (Object obj : it->second.objects) {
                     objects.push_back(obj);
                 }
-            }
-            else
-            {
-                for (Object obj : Chunk(chunkX, chunkZ).objects)
-                {
+            } else {
+                for (Object obj : Chunk(chunkX, chunkZ).objects) {
                     objects.push_back(obj);
                 }
             }
@@ -49,15 +38,12 @@ std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z)
     return objects;
 }
 
-void World::GenerateChunk(int chunkX, int chunkZ)
-{
+void World::GenerateChunk(int chunkX, int chunkZ) {
     Chunk chunk(chunkX, chunkZ);
     bool hasTree = std::rand() <= 429496729; // randomly decide whether tree should be generated
 
-    for (int x = 0; x < chunkSize; x++)
-    {
-        for (int z = 0; z < chunkSize; z++)
-        {
+    for (int x = 0; x < chunkSize; x++) {
+        for (int z = 0; z < chunkSize; z++) {
             int xOffset = x + chunkSize * chunkX;
             int zOffset = z + chunkSize * chunkZ;
             int y = Settings::yTransform(Settings::calculateNoise(xOffset, zOffset));
@@ -68,8 +54,7 @@ void World::GenerateChunk(int chunkX, int chunkZ)
     }
 
     // Currently there is a bug where the tree's AO is accurate respective to its surrounding blocks, but the surrounding blocks' AO isn't. This is because the tree is generated after the blocks
-    if (hasTree)
-    {
+    if (hasTree) {
         Tree t(glm::vec3(chunk.objects[0].position.x, chunk.objects[0].position.y + 1, chunk.objects[0].position.z));
         chunk.PushMultiple(t.objects);
     }

@@ -1,16 +1,23 @@
 #include "Scene.hpp"
 
-Scene::Scene(World world_) : pWorld(std::make_unique<World>(world_)), pCamera(std::make_shared<Camera>(Camera()))
-{
+Scene::Scene(World world_) : pWorld(std::make_unique<World>(world_)), pCamera(std::make_shared<Camera>(Camera())) {
 }
 
-std::vector<Object> Scene::GetObjectsForRendering()
-{
-    return pWorld->GetChunkObjectsForCameraPosition(pCamera->cameraPos.x, pCamera->cameraPos.z);
+std::vector<Object> Scene::GetObjectsForRendering() {
+    auto [currentChunkX, currentChunkZ] = pWorld->GetChunkCoordinatesFromCameraPosition(pCamera->cameraPos.x, pCamera->cameraPos.z);
+
+    std::cout << lastChunks.first << std::endl;
+    std::cout << lastChunks.second << std::endl;
+    if (lastChunks.first != currentChunkX || lastChunks.second != currentChunkZ) {
+        cachedWorldObjects = pWorld->GetChunkObjectsForCameraPosition(pCamera->cameraPos.x, pCamera->cameraPos.z);
+        lastChunks = {currentChunkX, currentChunkZ};
+        return cachedWorldObjects;
+    } else {
+        return cachedWorldObjects;
+    }
 }
 
-std::pair<glm::mat4, glm::mat4> Scene::GetViewProjection()
-{
+std::pair<glm::mat4, glm::mat4> Scene::GetViewProjection() {
     return std::pair(pCamera->GetView(), pCamera->GetProjection());
 }
 
