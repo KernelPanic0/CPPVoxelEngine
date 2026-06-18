@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -std=c++20 -O2 -I./includes -I./includes/imgui -I./src/ -MMD -MP
+CXXFLAGS := -std=c++20 -O0 -I./includes -I./includes/imgui -I./src/ -MMD -MP -g -fno-omit-frame-pointer
 LDFLAGS := -lglfw -lGL -ldl -lX11 -lpthread -lXrandr -lXi
 BUILD_DIR := ./build
 TARGET := $(BUILD_DIR)/voxel

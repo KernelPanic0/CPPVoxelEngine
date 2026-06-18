@@ -1,6 +1,5 @@
 #include "GraphicsManager.hpp"
-GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400))
-{
+GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400)) {
     shader =
         std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader.vert",
                                  "./src/Engine/Graphics/Shaders/shader.frag");
@@ -26,13 +25,11 @@ GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400))
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-GraphicsManager::~GraphicsManager()
-{
+GraphicsManager::~GraphicsManager() {
     shader.reset();
 }
 
-Renderable GraphicsManager::CreateRenderable(Object object)
-{
+Renderable GraphicsManager::CreateRenderable(Object object) {
     std::unique_ptr<VertexArray> vao =
         std::make_unique<VertexArray>(); // Objects with the same mesh and
                                          // layout (attributes/foormat) should
@@ -43,8 +40,7 @@ Renderable GraphicsManager::CreateRenderable(Object object)
 
     // calculate stride
     GLsizei stride = 0;
-    for (const auto &attr : object.attributes)
-    {
+    for (const auto &attr : object.attributes) {
         stride += attr.size * attr.typeSize;
     }
 
@@ -52,8 +48,7 @@ Renderable GraphicsManager::CreateRenderable(Object object)
     GLsizeiptr offset = 0;
 
     // insert all attributes
-    for (int i = 0; i < object.attributes.size(); i++)
-    {
+    for (int i = 0; i < object.attributes.size(); i++) {
         glVertexAttribPointer(i, object.attributes[i].size,
                               object.attributes[i].type, GL_FALSE, stride,
                               (const GLvoid *)offset);
@@ -63,16 +58,12 @@ Renderable GraphicsManager::CreateRenderable(Object object)
 
     // generate texture (if any)
     unsigned int textureId = 0;
-    if (object.texturePath != "")
-    {
+    if (object.texturePath != "") {
         auto cachedTexture = textureCache.find(object.texturePath);
 
-        if (cachedTexture != textureCache.end())
-        {
+        if (cachedTexture != textureCache.end()) {
             textureId = cachedTexture->second;
-        }
-        else
-        {
+        } else {
             textureId = GenerateTexture(object.texturePath);
             textureCache.insert({object.texturePath, textureId});
         }
@@ -83,13 +74,11 @@ Renderable GraphicsManager::CreateRenderable(Object object)
     return newRenderable;
 }
 
-void GraphicsManager::ClearRenderCache()
-{
+void GraphicsManager::ClearRenderCache() {
     objectRenderCache.clear();
 }
 
-void GraphicsManager::AddRenderable(const Object &object)
-{
+void GraphicsManager::AddRenderable(const Object &object) {
     // // erase objects/chunks that are too far away
     // std::erase_if(objectRenderCache,
     //               [&](const Renderable &so)
@@ -111,8 +100,7 @@ void GraphicsManager::RenderObjects(
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    for (const Renderable &object : objectRenderCache)
-    {
+    for (const Renderable &object : objectRenderCache) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, object.textureId);
         object.vao->Bind();
@@ -120,16 +108,13 @@ void GraphicsManager::RenderObjects(
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
 
-        if (object.object.position.y < -40)
-        {
+        if (object.object.position.y < -40) {
             lightShader->use();
             lightShader->setMat4("projection", viewProjection.second);
             lightShader->setMat4("view", viewProjection.first);
             lightShader->setMat4("model", model);
             lightShader->setFloat("time", glfwGetTime());
-        }
-        else
-        {
+        } else {
             shader->use();
             lightShader->setMat4("projection", viewProjection.second);
             lightShader->setMat4("view", viewProjection.first);
@@ -171,8 +156,7 @@ void GraphicsManager::RenderObjects(
     glfwSwapBuffers(window.window);
 }
 
-unsigned int GraphicsManager::GenerateTexture(std::string path)
-{
+unsigned int GraphicsManager::GenerateTexture(std::string path) {
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
     unsigned char *textureData =

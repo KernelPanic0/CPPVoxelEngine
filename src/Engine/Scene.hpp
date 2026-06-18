@@ -12,6 +12,7 @@ class Scene {
     std::vector<Object> cachedWorldObjects;
 
   public:
+    bool sceneDirty = true;
     Scene(World world);
     std::vector<Object> GetObjectsForRendering();
     std::pair<glm::mat4, glm::mat4> GetViewProjection();

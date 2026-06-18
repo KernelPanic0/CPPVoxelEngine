@@ -9,8 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-struct Renderable
-{
+struct Renderable {
     Object object;
     std::unique_ptr<VertexArray> vao;
     std::unique_ptr<VertexBuffer> vbo;
@@ -18,8 +17,7 @@ struct Renderable
     unsigned int textureId;
 };
 
-class GraphicsManager
-{
+class GraphicsManager {
   private:
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
