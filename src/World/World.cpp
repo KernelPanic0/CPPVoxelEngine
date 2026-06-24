@@ -1,6 +1,12 @@
 #include "World.hpp"
 
 World::World() {
+    std::vector<Object> uniqueObjects = GetUniqueObjects();
+
+    for (int i = 0; i < uniqueObjects.size(); i++) {
+        objectMap[i] = uniqueObjects[i];
+    }
+
     GenerateChunk(0, 0);
 }
 
@@ -11,9 +17,9 @@ std::pair<int, int> World::GetChunkCoordinatesFromCameraPosition(double x, doubl
     return {currentChunkX, currentChunkZ};
 }
 
-std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z) {
+std::vector<RawObject> World::GetChunkObjectsForCameraPosition(double x, double z) {
     auto [currentChunkX, currentChunkZ] = GetChunkCoordinatesFromCameraPosition(x, z);
-    std::vector<Object> objects;
+    std::vector<RawObject> objects;
 
     for (int dx = -renderDistance; dx < renderDistance; dx++) {
         for (int dz = -renderDistance; dz < renderDistance; dz++) {
@@ -24,11 +30,11 @@ std::vector<Object> World::GetChunkObjectsForCameraPosition(double x, double z) 
 
             auto it = chunks.find({chunkX, chunkZ});
             if (it != chunks.end()) {
-                for (Object obj : it->second.objects) {
+                for (RawObject obj : it->second.objects) {
                     objects.push_back(obj);
                 }
             } else {
-                for (Object obj : Chunk(chunkX, chunkZ).objects) {
+                for (RawObject obj : Chunk(chunkX, chunkZ).objects) {
                     objects.push_back(obj);
                 }
             }
@@ -48,16 +54,27 @@ void World::GenerateChunk(int chunkX, int chunkZ) {
             int zOffset = z + chunkSize * chunkZ;
             int y = Settings::yTransform(Settings::calculateNoise(xOffset, zOffset));
 
-            Cube c(glm::vec3(xOffset, y, zOffset), "./assets/grass2.png");
-            chunk.objects.push_back(c);
+            chunk.objects.emplace_back(glm::vec3(xOffset, y, zOffset), 0);
         }
     }
 
     // Currently there is a bug where the tree's AO is accurate respective to its surrounding blocks, but the surrounding blocks' AO isn't. This is because the tree is generated after the blocks
-    if (hasTree) {
-        Tree t(glm::vec3(chunk.objects[0].position.x, chunk.objects[0].position.y + 1, chunk.objects[0].position.z));
-        chunk.PushMultiple(t.objects);
-    }
+    // tree will be figured out later sorry
+    // if (hasTree) {
+    //     Tree t(glm::vec3(chunk.objects[0].position.x, chunk.objects[0].position.y + 1, chunk.objects[0].position.z));
+    //     chunk.PushMultiple(t.objects);
+    // }
 
     chunks.insert({chunk.coords, chunk});
+}
+
+std::vector<Object> World::GetUniqueObjects() {
+    std::vector<Object> objects;
+    objects.emplace_back(glm::vec3(0, 0, 0), "./assets/grass2.png");
+
+    return objects;
+}
+
+std::unordered_map<int, Object> World::GetObjectMapping() { // for instancing
+    return objectMap;
 }

@@ -29,14 +29,14 @@ GraphicsManager::~GraphicsManager() {
     shader.reset();
 }
 
-Renderable GraphicsManager::CreateRenderable(Object object) {
-    std::unique_ptr<VertexArray> vao =
-        std::make_unique<VertexArray>(); // Objects with the same mesh and
+Renderable GraphicsManager::CreateRenderable(const Object &object) {
+    std::shared_ptr<VertexArray> vao =
+        std::make_shared<VertexArray>(); // Objects with the same mesh and
                                          // layout (attributes/foormat) should
                                          // share a VAO for optimal performance.
                                          // This needs to be changed.
-    std::unique_ptr<VertexBuffer> vbo = std::make_unique<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
-    std::unique_ptr<ElementBuffer> ebo = std::make_unique<ElementBuffer>((GLuint *)object.mesh.indices.data(), object.mesh.indices.size() * 4);
+    std::shared_ptr<VertexBuffer> vbo = std::make_shared<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
+    std::shared_ptr<ElementBuffer> ebo = std::make_shared<ElementBuffer>((GLuint *)object.mesh.indices.data(), object.mesh.indices.size() * 4);
 
     // calculate stride
     GLsizei stride = 0;
@@ -49,9 +49,13 @@ Renderable GraphicsManager::CreateRenderable(Object object) {
 
     // insert all attributes
     for (int i = 0; i < object.attributes.size(); i++) {
-        glVertexAttribPointer(i, object.attributes[i].size,
-                              object.attributes[i].type, GL_FALSE, stride,
+        glVertexAttribPointer(i,
+                              object.attributes[i].size,
+                              object.attributes[i].type,
+                              GL_FALSE,
+                              stride,
                               (const GLvoid *)offset);
+
         offset += object.attributes[i].size * object.attributes[i].typeSize;
         glEnableVertexAttribArray(i);
     }
@@ -75,21 +79,27 @@ Renderable GraphicsManager::CreateRenderable(Object object) {
 }
 
 void GraphicsManager::ClearRenderCache() {
-    objectRenderCache.clear();
+    objectsToRender.clear();
 }
 
-void GraphicsManager::AddRenderable(const Object &object) {
-    // // erase objects/chunks that are too far away
-    // std::erase_if(objectRenderCache,
-    //               [&](const Renderable &so)
-    //               {
-    //                   return glm::length(cameraPosition) -
-    //                              glm::length(so.object.position) >
-    //                          10;
-    //               });
+void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objects) {
+    objectsToRender = objects;
 
+    std::vector<glm::vec3> positions;
+    positions.reserve(objects.size());
+
+    for (const auto &obj : objectsToRender) {
+        positions.push_back(obj.position);
+    }
+
+    objectMap[objectsToRender[0].id].vbo->Buffer(positions.data(), sizeof(positions));
+}
+
+void GraphicsManager::AddRenderable(int rawObjectId, const Object &object) {
     Renderable newRenderable = CreateRenderable(object);
-    objectRenderCache.push_back(std::move(newRenderable));
+
+    objectMap[rawObjectId] = newRenderable;
+    // objectRenderCache.push_back(std::move(newRenderable));
 }
 
 void GraphicsManager::RenderObjects(
@@ -100,29 +110,32 @@ void GraphicsManager::RenderObjects(
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    for (const Renderable &object : objectRenderCache) {
+    for (const RawObject &object : objectsToRender) {
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, object.textureId);
+        glBindTexture(GL_TEXTURE_2D, objectMap[object.id].textureId);
         object.vao->Bind();
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(object.object.position));
 
-        if (object.object.position.y < -40) {
-            lightShader->use();
-            lightShader->setMat4("projection", viewProjection.second);
-            lightShader->setMat4("view", viewProjection.first);
-            lightShader->setMat4("model", model);
-            lightShader->setFloat("time", glfwGetTime());
-        } else {
-            shader->use();
-            lightShader->setMat4("projection", viewProjection.second);
-            lightShader->setMat4("view", viewProjection.first);
-            shader->setMat4("model", model);
-            shader->setVec3("camPos", cameraPos);
-        }
+        // if (object.object.position.y < -40) {
+        //     lightShader->use();
+        //     lightShader->setMat4("projection", viewProjection.second);
+        //     lightShader->setMat4("view", viewProjection.first);
+        //     lightShader->setMat4("model", model);
+        //     lightShader->setFloat("time", glfwGetTime());
+        // } else {
+
+        shader->use();
+        lightShader->setMat4("projection", viewProjection.second);
+        lightShader->setMat4("view", viewProjection.first);
+        shader->setMat4("model", model);
+        shader->setVec3("camPos", cameraPos);
+
+        // }
 
         glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
+        // glDrawArraysInstanced
     }
 
     // render model viewer thingy

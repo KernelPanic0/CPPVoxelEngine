@@ -9,12 +9,13 @@ class Scene {
     std::shared_ptr<Camera> pCamera;
     std::unique_ptr<World> pWorld;
     std::pair<int, int> lastChunks = {99, 99}; // used to prevent repeated expensive object fetching from world
-    std::vector<Object> cachedWorldObjects;
+    std::vector<RawObject> cachedWorldObjects;
 
   public:
     bool sceneDirty = true;
     Scene(World world);
-    std::vector<Object> GetObjectsForRendering();
+    std::vector<RawObject> GetObjectsForRendering();
     std::pair<glm::mat4, glm::mat4> GetViewProjection();
-    Camera *GetCamera(); // temporary
+    Camera *GetCamera();
+    std::unordered_map<int, Object> GetObjectMapping();
 };

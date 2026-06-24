@@ -1,33 +1,27 @@
 #include "Buffers.hpp"
 
-VertexArray::VertexArray()
-{
+VertexArray::VertexArray() {
     glGenVertexArrays(1, &id);
     glBindVertexArray(id);
 }
 
-VertexArray::~VertexArray()
-{
+VertexArray::~VertexArray() {
     glDeleteVertexArrays(1, &id);
 }
 
-void VertexArray::Bind() const
-{
+void VertexArray::Bind() const {
     glBindVertexArray(id);
 }
 
-void VertexArray::Unbind() const
-{
+void VertexArray::Unbind() const {
     glBindVertexArray(0);
 }
 
-void VertexArray::AddAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *offset)
-{
+void VertexArray::AddAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *offset) {
     glVertexAttribPointer(index, size, type, normalized, stride, offset);
 }
 
-VertexBuffer::VertexBuffer(GLfloat *vertices, GLsizeiptr size)
-{ // Create a new VBO, bind to it and insert data into it
+VertexBuffer::VertexBuffer(GLfloat *vertices, GLsizeiptr size) { // Create a new VBO, bind to it and insert data into it
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -35,47 +29,44 @@ VertexBuffer::VertexBuffer(GLfloat *vertices, GLsizeiptr size)
     // glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-VertexBuffer::~VertexBuffer()
-{
+VertexBuffer::~VertexBuffer() {
     glDeleteBuffers(1, &id);
 }
 
-void VertexBuffer::Bind() const
-{
+void VertexBuffer::Bind() const {
     glBindBuffer(GL_ARRAY_BUFFER, id);
 }
 
-void VertexBuffer::Unbind() const
-{
+void VertexBuffer::Buffer(glm::vec3 *vertices, GLsizeiptr size) const {
+    glBindBuffer(GL_ARRAY_BUFFER, id);
+    glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+}
+
+void VertexBuffer::Unbind() const {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-ElementBuffer::ElementBuffer(GLuint *indices, GLsizeiptr size)
-{
+ElementBuffer::ElementBuffer(GLuint *indices, GLsizeiptr size) {
     glGenBuffers(1, &id);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, indices, GL_STATIC_DRAW);
     // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-ElementBuffer::~ElementBuffer()
-{
+ElementBuffer::~ElementBuffer() {
     glDeleteBuffers(1, &id);
 }
 
-void ElementBuffer::Bind() const
-{
+void ElementBuffer::Bind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id);
 }
 
-void ElementBuffer::Unbind() const
-{
+void ElementBuffer::Unbind() const {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // For Model Viewer
-FrameBuffer::FrameBuffer(int width, int height)
-{
+FrameBuffer::FrameBuffer(int width, int height) {
     glGenFramebuffers(1, &id);
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 
@@ -88,17 +79,14 @@ FrameBuffer::FrameBuffer(int width, int height)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0);
 }
 
-void FrameBuffer::Bind() const
-{
+void FrameBuffer::Bind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, id);
 }
 
-void FrameBuffer::Unbind() const
-{
+void FrameBuffer::Unbind() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-FrameBuffer::~FrameBuffer()
-{
+FrameBuffer::~FrameBuffer() {
     glDeleteBuffers(1, &id);
 }

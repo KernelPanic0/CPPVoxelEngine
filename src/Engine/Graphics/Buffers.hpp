@@ -1,17 +1,16 @@
 #pragma once
 
 #include "../../../includes/glad/glad.h"
-#include "../../GLFW/Window.hpp"
-#include <GLFW/glfw3.h> // System-installed GLFW
-#include "../../misc/shader_util.h"
 #include "../../../includes/glm/glm.hpp"
 #include "../../../includes/glm/gtc/matrix_transform.hpp"
 #include "../../../includes/glm/gtc/type_ptr.hpp"
+#include "../../GLFW/Window.hpp"
+#include "../../misc/shader_util.h"
+#include <GLFW/glfw3.h> // System-installed GLFW
 #include <vector>
 
-class VertexArray
-{
-public:
+class VertexArray {
+  public:
     GLuint id;
     VertexArray();
     ~VertexArray();
@@ -20,19 +19,18 @@ public:
     void AddAttribute(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *offset);
 };
 
-class VertexBuffer
-{
-public:
+class VertexBuffer {
+  public:
     GLuint id;
     VertexBuffer(GLfloat *vertices, GLsizeiptr size);
     ~VertexBuffer();
     void Bind() const;
     void Unbind() const;
+    void Buffer(glm::vec3 *vertices, GLsizeiptr size) const;
 };
 
-class ElementBuffer
-{
-public:
+class ElementBuffer {
+  public:
     GLuint id;
     ElementBuffer(GLuint *indices, GLsizeiptr size);
     ~ElementBuffer();
@@ -40,9 +38,8 @@ public:
     void Unbind() const;
 };
 
-class FrameBuffer
-{
-public:
+class FrameBuffer {
+  public:
     GLuint id;
     GLuint textureId;
     FrameBuffer(int width, int height);
