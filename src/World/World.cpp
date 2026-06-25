@@ -70,7 +70,7 @@ void World::GenerateChunk(int chunkX, int chunkZ) {
 
 std::vector<Object> World::GetUniqueObjects() {
     std::vector<Object> objects;
-    objects.emplace_back(glm::vec3(0, 0, 0), "./assets/grass2.png");
+    objects.push_back(Cube(glm::vec3(0, 0, 0), "./assets/grass2.png"));
 
     return objects;
 }

@@ -9,8 +9,6 @@ Engine::Engine() : pWindow(std::make_shared<Window>()), pGraphicsManager(std::ma
 }
 
 void Engine::RenderFrame() {
-    std::vector<Object> objects = pScene->GetObjectsForRendering();
-
     if (pScene->sceneDirty) {
         pGraphicsManager->ClearRenderCache();
 

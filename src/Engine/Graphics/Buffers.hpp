@@ -22,11 +22,11 @@ class VertexArray {
 class VertexBuffer {
   public:
     GLuint id;
-    VertexBuffer(GLfloat *vertices, GLsizeiptr size);
+    VertexBuffer(const GLfloat *vertices, GLsizeiptr size);
     ~VertexBuffer();
     void Bind() const;
     void Unbind() const;
-    void Buffer(glm::vec3 *vertices, GLsizeiptr size) const;
+    void Buffer(glm::mat4 *vertices, GLsizeiptr size) const;
 };
 
 class ElementBuffer {

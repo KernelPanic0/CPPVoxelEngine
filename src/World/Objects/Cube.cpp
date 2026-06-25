@@ -1,12 +1,10 @@
 #include "Cube.hpp"
 
-Cube::Cube(glm::vec3 position, std::string _texturePath)
-{
+Cube::Cube(glm::vec3 position, std::string _texturePath) {
     VertexShadingMap vertexShadingMap;
     ApplyShadingMap(vertexShadingMap, position);
 
-    auto vs = [&](int v, Face f) -> int
-    {
+    auto vs = [&](int v, Face f) -> int {
         auto it = vertexShadingMap.find({v, f});
         return (it != vertexShadingMap.end()) ? it->second : 0;
     };
@@ -16,8 +14,7 @@ Cube::Cube(glm::vec3 position, std::string _texturePath)
     // split, gouraud interpolation smears shading from the two corners on the
     // diagonal seam (e.g. v1↔v3 on the top face) toward the opposite corner; the
     // fan layout makes every corner symmetric.
-    auto avg4 = [](int a, int b, int c, int d)
-    { return (a + b + c + d) / 4.0f; };
+    auto avg4 = [](int a, int b, int c, int d) { return (a + b + c + d) / 4.0f; };
 
     float cNegZ = avg4(vs(5, Face::NegZ), vs(6, Face::NegZ), vs(2, Face::NegZ), vs(1, Face::NegZ));
     float cPosZ = avg4(vs(4, Face::PosZ), vs(7, Face::PosZ), vs(3, Face::PosZ), vs(0, Face::PosZ));
@@ -154,14 +151,26 @@ Cube::Cube(glm::vec3 position, std::string _texturePath)
     ObjectAttribute surfaceNormalAttr = {3, GL_FLOAT, sizeof(float)};
     ObjectAttribute vertexShadingAttr = {1, GL_FLOAT, sizeof(float)};
 
+    ObjectAttribute matAttr1 = {4, GL_FLOAT, sizeof(glm::vec4)};
+    ObjectAttribute matAttr2 = {4, GL_FLOAT, sizeof(glm::vec4)};
+    ObjectAttribute matAttr3 = {4, GL_FLOAT, sizeof(glm::vec4)};
+    ObjectAttribute matAttr4 = {4, GL_FLOAT, sizeof(glm::vec4)};
+
     this->mesh = cubeMesh;
-    this->attributes = {positionAttr, textureCoordinatesAttr, surfaceNormalAttr, vertexShadingAttr};
+    this->attributes = {
+        positionAttr,
+        textureCoordinatesAttr,
+        surfaceNormalAttr,
+        vertexShadingAttr,
+        matAttr1,
+        matAttr2,
+        matAttr3,
+        matAttr4};
     this->position = position;
     this->texturePath = _texturePath;
 }
 
-void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position)
-{
+void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position) {
     // Pattern: when a neighbour is 1 below, shade the bottom corners of the side face facing it.
     //          when a neighbour is 1 above, shade the top face's edge corners closest to it.
     int dy = 0;
@@ -172,8 +181,7 @@ void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position)
     {
         sm[{6, Face::PosX}] = 1;
         sm[{7, Face::PosX}] = 1;
-    }
-    else if (dy == -1) // 1 above -> shade +Y face's +position.x edge (vertices 2, 3)
+    } else if (dy == -1) // 1 above -> shade +Y face's +position.x edge (vertices 2, 3)
     {
         sm[{2, Face::PosY}] = 1;
         sm[{3, Face::PosY}] = 1;
@@ -185,8 +193,7 @@ void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position)
     {
         sm[{4, Face::NegX}] = 1;
         sm[{5, Face::NegX}] = 1;
-    }
-    else if (dy == -1) // shade +Y face's -position.x edge (vertices 0, 1)
+    } else if (dy == -1) // shade +Y face's -position.x edge (vertices 0, 1)
     {
         sm[{0, Face::PosY}] = 1;
         sm[{1, Face::PosY}] = 1;
@@ -198,8 +205,7 @@ void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position)
     {
         sm[{4, Face::PosZ}] = 1;
         sm[{7, Face::PosZ}] = 1;
-    }
-    else if (dy == -1) // shade +Y face's +position.zedge (vertices 0, 3)
+    } else if (dy == -1) // shade +Y face's +position.zedge (vertices 0, 3)
     {
         sm[{0, Face::PosY}] = 1;
         sm[{3, Face::PosY}] = 1;
@@ -211,8 +217,7 @@ void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position)
     {
         sm[{5, Face::NegZ}] = 1;
         sm[{6, Face::NegZ}] = 1;
-    }
-    else if (dy == -1) // shade +Y face's -position.zedge (vertices 1, 2)
+    } else if (dy == -1) // shade +Y face's -position.zedge (vertices 1, 2)
     {
         sm[{1, Face::PosY}] = 1;
         sm[{2, Face::PosY}] = 1;

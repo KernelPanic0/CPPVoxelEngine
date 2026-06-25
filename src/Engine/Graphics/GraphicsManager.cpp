@@ -1,7 +1,7 @@
 #include "GraphicsManager.hpp"
 GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400)) {
     shader =
-        std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader.vert",
+        std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader_instanced.vert",
                                  "./src/Engine/Graphics/Shaders/shader.frag");
     lightShader = std::make_unique<Shader>(
         "./src/Engine/Graphics/Shaders/shader_water.vert",
@@ -36,19 +36,21 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
                                          // share a VAO for optimal performance.
                                          // This needs to be changed.
     std::shared_ptr<VertexBuffer> vbo = std::make_shared<VertexBuffer>(object.mesh.vertices.data(), object.mesh.vertices.size() * 4);
+    std::shared_ptr<VertexBuffer> instanceVbo = std::make_shared<VertexBuffer>(nullptr, 0);
     std::shared_ptr<ElementBuffer> ebo = std::make_shared<ElementBuffer>((GLuint *)object.mesh.indices.data(), object.mesh.indices.size() * 4);
+    vbo->Bind();
 
     // calculate stride
     GLsizei stride = 0;
-    for (const auto &attr : object.attributes) {
-        stride += attr.size * attr.typeSize;
+    for (int i = 0; i < 4; i++) {
+        stride += object.attributes[i].size * object.attributes[i].typeSize;
     }
 
     // calculate offset
     GLsizeiptr offset = 0;
 
     // insert all attributes
-    for (int i = 0; i < object.attributes.size(); i++) {
+    for (int i = 0; i < 4; i++) {
         glVertexAttribPointer(i,
                               object.attributes[i].size,
                               object.attributes[i].type,
@@ -58,6 +60,18 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
 
         offset += object.attributes[i].size * object.attributes[i].typeSize;
         glEnableVertexAttribArray(i);
+    }
+
+    instanceVbo->Bind();
+    for (int i = 0; i < 4; i++) {
+        glVertexAttribPointer(4 + i,
+                              4,
+                              GL_FLOAT,
+                              GL_FALSE,
+                              sizeof(glm::mat4),
+                              (const GLvoid *)(i * sizeof(glm::vec4))); // offset per column
+        glEnableVertexAttribArray(4 + i);
+        glVertexAttribDivisor(4 + i, 1);
     }
 
     // generate texture (if any)
@@ -73,8 +87,7 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
         }
     }
 
-    Renderable newRenderable = {object, std::move(vao), std::move(vbo),
-                                std::move(ebo), textureId};
+    Renderable newRenderable = {object, std::move(vao), std::move(vbo), std::move(instanceVbo), std::move(ebo), textureId};
     return newRenderable;
 }
 
@@ -85,14 +98,16 @@ void GraphicsManager::ClearRenderCache() {
 void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objects) {
     objectsToRender = objects;
 
-    std::vector<glm::vec3> positions;
-    positions.reserve(objects.size());
+    std::vector<glm::mat4> modelMatrices;
 
     for (const auto &obj : objectsToRender) {
-        positions.push_back(obj.position);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(obj.position));
+
+        modelMatrices.push_back(model);
     }
 
-    objectMap[objectsToRender[0].id].vbo->Buffer(positions.data(), sizeof(positions));
+    objectMap[objectsToRender[0].id].instanceVbo->Buffer(modelMatrices.data(), modelMatrices.size() * sizeof(glm::mat4));
 }
 
 void GraphicsManager::AddRenderable(int rawObjectId, const Object &object) {
@@ -110,13 +125,10 @@ void GraphicsManager::RenderObjects(
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
 
-    for (const RawObject &object : objectsToRender) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, objectMap[object.id].textureId);
-        object.vao->Bind();
+    for (auto const &[id, renderableObj] : objectMap) {
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(object.object.position));
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, renderableObj.textureId);
 
         // if (object.object.position.y < -40) {
         //     lightShader->use();
@@ -127,15 +139,18 @@ void GraphicsManager::RenderObjects(
         // } else {
 
         shader->use();
-        lightShader->setMat4("projection", viewProjection.second);
-        lightShader->setMat4("view", viewProjection.first);
-        shader->setMat4("model", model);
+        shader->setMat4("projection", viewProjection.second);
+        shader->setMat4("view", viewProjection.first);
+        // shader->setMat4("model", model);
         shader->setVec3("camPos", cameraPos);
 
         // }
 
-        glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
-        // glDrawArraysInstanced
+        // glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
+        renderableObj.vao->Bind();
+        renderableObj.vbo->Bind();
+        glDrawArraysInstanced(GL_TRIANGLES, 0, renderableObj.object.mesh.vertices.size(), objectsToRender.size());
+        // glDrawElementsInstanced(GL_TRIANGLES, renderableObj.object.mesh.indices.size(), GL_UNSIGNED_INT, 0, objectsToRender.size());
     }
 
     // render model viewer thingy
@@ -143,9 +158,9 @@ void GraphicsManager::RenderObjects(
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    objectRenderCache[0].vao->Bind();
+    objectMap[0].vao->Bind();
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, objectRenderCache[0].textureId);
+    glBindTexture(GL_TEXTURE_2D, objectMap[0].textureId);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(0, 0, 0));
@@ -161,7 +176,7 @@ void GraphicsManager::RenderObjects(
     shader->setMat4("model", model);
 
     glDrawArrays(GL_TRIANGLES, 0,
-                 objectRenderCache[0].object.mesh.vertices.size() / 8);
+                 objectMap[0].object.mesh.vertices.size() / 8);
     fbo.Unbind();
     userInterface.Render((ImTextureID)(intptr_t)fbo.textureId);
 

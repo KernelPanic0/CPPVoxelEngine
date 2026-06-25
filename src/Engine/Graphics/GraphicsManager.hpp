@@ -14,6 +14,7 @@ struct Renderable {
     Object object;
     std::shared_ptr<VertexArray> vao;
     std::shared_ptr<VertexBuffer> vbo;
+    std::shared_ptr<VertexBuffer> instanceVbo;
     std::shared_ptr<ElementBuffer> ebo;
     unsigned int textureId;
 };

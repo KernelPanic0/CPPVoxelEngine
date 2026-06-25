@@ -21,7 +21,7 @@ void VertexArray::AddAttribute(GLuint index, GLint size, GLenum type, GLboolean 
     glVertexAttribPointer(index, size, type, normalized, stride, offset);
 }
 
-VertexBuffer::VertexBuffer(GLfloat *vertices, GLsizeiptr size) { // Create a new VBO, bind to it and insert data into it
+VertexBuffer::VertexBuffer(const GLfloat *vertices, GLsizeiptr size) { // Create a new VBO, bind to it and insert data into it
     glGenBuffers(1, &id);
     glBindBuffer(GL_ARRAY_BUFFER, id);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -37,7 +37,7 @@ void VertexBuffer::Bind() const {
     glBindBuffer(GL_ARRAY_BUFFER, id);
 }
 
-void VertexBuffer::Buffer(glm::vec3 *vertices, GLsizeiptr size) const {
+void VertexBuffer::Buffer(glm::mat4 *vertices, GLsizeiptr size) const {
     glBindBuffer(GL_ARRAY_BUFFER, id);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }
