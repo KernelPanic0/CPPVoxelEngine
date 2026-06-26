@@ -139,10 +139,13 @@ Cube::Cube(glm::vec3 position, std::string _texturePath) {
          0.0f,  0.5f,  0.0f,  0.375f, tCtr,     0.0f,  1.0f,  0.0f,  cPosY,
     };
 
-    std::vector<int> indices = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
+    // 8 floats per vertex: pos(3), uv(2), normal(3), shade(1)
+    // verticesT already stores triangles in order, so create a linear index buffer.
+    std::vector<int> indices;
+    indices.reserve(verticesT.size() / 8);
+    for (int i = 0; i < static_cast<int>(verticesT.size() / 8); ++i) {
+        indices.push_back(i);
+    }
     // clang-format on
 
     Mesh cubeMesh = {verticesT, indices};

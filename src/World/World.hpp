@@ -45,7 +45,7 @@ struct ChunkCoordHash {
 };
 
 const inline int renderDistance = 2; // Number of chunks to render in each direction
-const inline int chunkSize = 32;
+const inline int chunkSize = 100;
 
 class World {
   private:

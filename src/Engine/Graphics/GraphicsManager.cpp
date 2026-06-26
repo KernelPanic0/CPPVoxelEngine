@@ -93,67 +93,64 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
 
 void GraphicsManager::ClearRenderCache() {
     objectsToRender.clear();
+    instanceCounts.clear();
 }
 
 void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objects) {
     objectsToRender = objects;
 
-    std::vector<glm::mat4> modelMatrices;
-
+    instanceCounts.clear();
+    std::unordered_map<int, std::vector<glm::mat4>> groupedModelMatrices;
     for (const auto &obj : objectsToRender) {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(obj.position));
-
-        modelMatrices.push_back(model);
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(obj.position));
+        groupedModelMatrices[obj.id].push_back(model);
     }
 
-    objectMap[objectsToRender[0].id].instanceVbo->Buffer(modelMatrices.data(), modelMatrices.size() * sizeof(glm::mat4));
+    for (auto &[id, matrices] : groupedModelMatrices) {
+        auto renderableIt = objectMap.find(id);
+        if (renderableIt == objectMap.end()) {
+            continue;
+        }
+
+        renderableIt->second.instanceVbo->Bind();
+        renderableIt->second.instanceVbo->Buffer(matrices.data(), static_cast<GLsizeiptr>(matrices.size() * sizeof(glm::mat4)));
+        instanceCounts[id] = static_cast<GLsizei>(matrices.size());
+    }
 }
 
 void GraphicsManager::AddRenderable(int rawObjectId, const Object &object) {
     Renderable newRenderable = CreateRenderable(object);
 
     objectMap[rawObjectId] = newRenderable;
-    // objectRenderCache.push_back(std::move(newRenderable));
 }
 
 void GraphicsManager::RenderObjects(
     const std::pair<glm::mat4, glm::mat4> viewProjection, glm::vec3 cameraPos,
-    Window &window, UI userInterface) // TEMPORARY TEST
-{
+    Window &window, UI &userInterface) {
     glClearColor(0.09f, 0.09f, 0.43f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+
+    shader->use();
+    shader->setMat4("projection", viewProjection.second);
+    shader->setMat4("view", viewProjection.first);
+    shader->setVec3("camPos", cameraPos);
 
     for (auto const &[id, renderableObj] : objectMap) {
+        auto countIt = instanceCounts.find(id);
+        if (countIt == instanceCounts.end() || countIt->second == 0) {
+            continue;
+        }
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, renderableObj.textureId);
 
-        // if (object.object.position.y < -40) {
-        //     lightShader->use();
-        //     lightShader->setMat4("projection", viewProjection.second);
-        //     lightShader->setMat4("view", viewProjection.first);
-        //     lightShader->setMat4("model", model);
-        //     lightShader->setFloat("time", glfwGetTime());
-        // } else {
-
-        shader->use();
-        shader->setMat4("projection", viewProjection.second);
-        shader->setMat4("view", viewProjection.first);
-        // shader->setMat4("model", model);
-        shader->setVec3("camPos", cameraPos);
-
-        // }
-
-        // glDrawArrays(GL_TRIANGLES, 0, object.object.mesh.vertices.size() / 8);
         renderableObj.vao->Bind();
         renderableObj.vbo->Bind();
-        glDrawArraysInstanced(GL_TRIANGLES, 0, renderableObj.object.mesh.vertices.size(), objectsToRender.size());
-        // glDrawElementsInstanced(GL_TRIANGLES, renderableObj.object.mesh.indices.size(), GL_UNSIGNED_INT, 0, objectsToRender.size());
+        renderableObj.ebo->Bind();
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(renderableObj.object.mesh.indices.size()), GL_UNSIGNED_INT, (const void *)0, countIt->second);
     }
 
-    // render model viewer thingy
+    // render model viewer thingy, currently broken
     fbo.Bind();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -166,17 +163,12 @@ void GraphicsManager::RenderObjects(
     model = glm::translate(model, glm::vec3(0, 0, 0));
 
     shader->use();
-    lightShader->setMat4(
-        "projection",
-        glm::perspective(glm::radians(45.0f), (float)4 / 3, 0.1f, 1000.0f));
-    lightShader->setMat4("view",
-                         glm::lookAt(glm::vec3(sin(glfwGetTime()) * 3, 1.5,
-                                               cos(glfwGetTime()) * 3),
-                                     glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
+    lightShader->setMat4("projection", glm::perspective(glm::radians(45.0f), (float)4 / 3, 0.1f, 1000.0f));
+    lightShader->setMat4("view", glm::lookAt(glm::vec3(sin(glfwGetTime()) * 3, 1.5, cos(glfwGetTime()) * 3), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)));
     shader->setMat4("model", model);
 
-    glDrawArrays(GL_TRIANGLES, 0,
-                 objectMap[0].object.mesh.vertices.size() / 8);
+    objectMap[0].ebo->Bind();
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(objectMap[0].object.mesh.indices.size()), GL_UNSIGNED_INT, (const void *)0);
     fbo.Unbind();
     userInterface.Render((ImTextureID)(intptr_t)fbo.textureId);
 
