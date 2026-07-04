@@ -3,8 +3,7 @@
 #include "Object.hpp"
 #include "map"
 
-enum class Face
-{
+enum class Face {
     PosX,
     NegX,
     PosY,
@@ -17,12 +16,10 @@ enum class Face
 // carry different values on each of the three faces that share it.
 using VertexShadingMap = std::map<std::pair<int, Face>, int>;
 
-class Cube : public Object
-{
-private:
-    void ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position);
-
-public:
-    // Cube corners are indexed 0-7 (see Cube.cpp for the layout).
+class Cube : public Object {
+  public:
     Cube(glm::vec3 position, std::string texturePath = "");
+
+    // Cube corners are indexed 0-7 (see Cube.cpp for the layout).
+    void ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position);
 };

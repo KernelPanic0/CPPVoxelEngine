@@ -4,6 +4,17 @@
 #include <random>
 #include <unordered_map>
 
+enum class Face {
+    PosX,
+    NegX,
+    PosY,
+    NegY,
+    PosZ,
+    NegZ
+};
+
+// Shading entries are keyed by (corner index, face) so the same corner can
+// carry different values on each of the three faces that share it.
 // instead of returning all of the objects attributes,
 // each unique object is exposed once with a unique identifier.
 // That way less data has to be sent to the engine, the cost of
@@ -11,6 +22,7 @@
 
 struct RawObject {
     glm::vec3 position;
+    using VertexShadingMap = std::map<std::pair<int, Face>, int>;
     int id;
 };
 
