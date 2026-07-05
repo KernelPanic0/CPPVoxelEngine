@@ -21,5 +21,5 @@ class Cube : public Object {
     Cube(glm::vec3 position, std::string texturePath = "");
 
     // Cube corners are indexed 0-7 (see Cube.cpp for the layout).
-    void ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position);
+    static void ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position);
 };

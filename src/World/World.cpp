@@ -54,7 +54,11 @@ void World::GenerateChunk(int chunkX, int chunkZ) {
             int zOffset = z + chunkSize * chunkZ;
             int y = Settings::yTransform(Settings::calculateNoise(xOffset, zOffset));
 
-            chunk.objects.emplace_back(glm::vec3(xOffset, y, zOffset), 0);
+            glm::vec3 pos = glm::vec3(xOffset, y, zOffset);
+            VertexShadingMap vs;
+            Cube::ApplyShadingMap(vs, pos);
+
+            chunk.objects.emplace_back(pos, vs, 0);
         }
     }
 

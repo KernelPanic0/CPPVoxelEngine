@@ -4,15 +4,6 @@
 #include <random>
 #include <unordered_map>
 
-enum class Face {
-    PosX,
-    NegX,
-    PosY,
-    NegY,
-    PosZ,
-    NegZ
-};
-
 // Shading entries are keyed by (corner index, face) so the same corner can
 // carry different values on each of the three faces that share it.
 // instead of returning all of the objects attributes,
