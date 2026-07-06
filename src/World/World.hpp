@@ -13,7 +13,7 @@
 
 struct RawObject {
     glm::vec3 position;
-    using VertexShadingMap = std::map<std::pair<int, Face>, int>;
+    VertexShadingMap vs;
     int id;
 };
 

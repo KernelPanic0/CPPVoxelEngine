@@ -11,7 +11,6 @@ Engine::Engine() : pWindow(std::make_shared<Window>()), pGraphicsManager(std::ma
 void Engine::RenderFrame() {
     if (pScene->sceneDirty) {
         pGraphicsManager->ClearRenderCache();
-
         pGraphicsManager->AddObjectsForRendering(pScene->GetObjectsForRendering());
 
         pScene->sceneDirty = false;

@@ -50,7 +50,7 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
     GLsizeiptr offset = 0;
 
     // insert all attributes
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         glVertexAttribPointer(i,
                               object.attributes[i].size,
                               object.attributes[i].type,
@@ -62,16 +62,25 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
         glEnableVertexAttribArray(i);
     }
 
+    offset = 0;
     instanceVbo->Bind();
+
+    glVertexAttribPointer(3, object.attributes[3].size, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) + sizeof(float), (const GLvoid *)0);
+    glEnableVertexAttribArray(3);
+    glVertexAttribDivisor(3, 1);
+
+    offset += object.attributes[3].size * object.attributes[3].typeSize;
+
     for (int i = 0; i < 4; i++) {
         glVertexAttribPointer(4 + i,
                               4,
                               GL_FLOAT,
                               GL_FALSE,
-                              sizeof(glm::mat4),
-                              (const GLvoid *)(i * sizeof(glm::vec4))); // offset per column
+                              sizeof(glm::mat4) + sizeof(float),
+                              (const GLvoid *)offset); // offset per column
         glEnableVertexAttribArray(4 + i);
         glVertexAttribDivisor(4 + i, 1);
+        offset += object.attributes[4 + i].size * object.attributes[4 + i].typeSize;
     }
 
     // generate texture (if any)
@@ -98,9 +107,9 @@ void GraphicsManager::ClearRenderCache() {
 
 void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objects) {
     objectsToRender = objects;
-
     instanceCounts.clear();
     std::unordered_map<int, std::vector<glm::mat4>> groupedModelMatrices;
+
     for (const auto &obj : objectsToRender) {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(obj.position));
         groupedModelMatrices[obj.id].push_back(model);
