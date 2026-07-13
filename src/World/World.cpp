@@ -58,7 +58,7 @@ void World::GenerateChunk(int chunkX, int chunkZ) {
             VertexShadingMap vs;
             Cube::ApplyShadingMap(vs, pos);
 
-            chunk.objects.emplace_back(pos, vs, 0);
+            chunk.objects.emplace_back(pos, vs, 0); // id needs to depend on the block being generated and not be hardcoded
         }
     }
 

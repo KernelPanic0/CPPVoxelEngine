@@ -15,7 +15,7 @@ void Engine::RenderFrame() {
 
         pScene->sceneDirty = false;
     }
-    pGraphicsManager->RenderObjects(pScene->GetViewProjection(), pScene->GetCamera()->cameraPos, *pWindow.get(), *UserInterface.get()); // not good, but function needs to use window, not own it // needs to be done faster
+    pGraphicsManager->RenderObjects(pScene->GetViewProjection(), pScene->GetCamera()->cameraPos, *pWindow.get(), *UserInterface.get()); // not good, but function needs to use window, not own it
 }
 
 void Engine::MainLoop() {

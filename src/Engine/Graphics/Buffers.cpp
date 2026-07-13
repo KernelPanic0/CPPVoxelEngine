@@ -37,7 +37,7 @@ void VertexBuffer::Bind() const {
     glBindBuffer(GL_ARRAY_BUFFER, id);
 }
 
-void VertexBuffer::Buffer(glm::mat4 *vertices, GLsizeiptr size) const {
+void VertexBuffer::Buffer(float *vertices, GLsizeiptr size) const {
     glBindBuffer(GL_ARRAY_BUFFER, id);
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 }

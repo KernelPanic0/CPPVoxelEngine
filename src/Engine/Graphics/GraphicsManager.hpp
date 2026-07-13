@@ -24,7 +24,7 @@ class GraphicsManager {
     std::unique_ptr<Shader> shader;
     std::unique_ptr<Shader> lightShader;
     std::unordered_map<std::string, int> textureCache; // prevents reloading already loaded textures
-    std::unordered_map<int, Renderable> objectMap;     // maps RawObject id to OpenGL Object
+    std::unordered_map<int, Renderable> objectMap;     // maps RawObject id to OpenGL Object (Renderable)
     std::unordered_map<int, GLsizei> instanceCounts;   // number of instances per renderable id
     std::vector<RawObject> objectsToRender;
 

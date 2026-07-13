@@ -4,7 +4,7 @@ layout (location = 1) in vec2 aTextureCoord;
 layout (location = 2) in vec3 aNormal;
 
 // Instanced attributes
-layout (location = 3) in float aShadeLevel;
+layout (location = 3) in float[48] aShadeLevel;
 layout (location = 4) in mat4 aInstanceModelMatrix;
 
 // uniform mat4 model;
@@ -25,4 +25,8 @@ void main()
     TextureCoord = aTextureCoord;
     ShadeLevel = aShadeLevel;
     Normal = aNormal;
+}
+
+int posToShadeLevel() {
+
 }

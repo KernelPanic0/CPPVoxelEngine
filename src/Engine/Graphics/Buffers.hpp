@@ -26,7 +26,7 @@ class VertexBuffer {
     ~VertexBuffer();
     void Bind() const;
     void Unbind() const;
-    void Buffer(glm::mat4 *vertices, GLsizeiptr size) const;
+    void Buffer(float *vertices, GLsizeiptr size) const;
 };
 
 class ElementBuffer {
