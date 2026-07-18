@@ -128,9 +128,6 @@ Cube::Cube(glm::vec3 position, std::string _texturePath) {
     ObjectAttribute textureCoordinatesAttr = {2, GL_FLOAT, sizeof(float)};
     ObjectAttribute surfaceNormalAttr = {3, GL_FLOAT, sizeof(float)};
 
-    // Instanced shading attr
-    ObjectAttribute vertexShadingAttr = {48, GL_FLOAT, sizeof(float)};
-
     // Instanced Model Matrix
     ObjectAttribute matAttr1 = {4, GL_FLOAT, sizeof(glm::vec4)};
     ObjectAttribute matAttr2 = {4, GL_FLOAT, sizeof(glm::vec4)};
@@ -142,7 +139,6 @@ Cube::Cube(glm::vec3 position, std::string _texturePath) {
         positionAttr,
         textureCoordinatesAttr,
         surfaceNormalAttr,
-        vertexShadingAttr,
         matAttr1,
         matAttr2,
         matAttr3,

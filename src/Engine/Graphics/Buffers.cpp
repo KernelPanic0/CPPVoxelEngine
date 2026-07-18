@@ -90,3 +90,18 @@ void FrameBuffer::Unbind() const {
 FrameBuffer::~FrameBuffer() {
     glDeleteBuffers(1, &id);
 }
+
+TextureBuffer::TextureBuffer(GLfloat *data, GLsizeiptr size) {
+    glGenBuffers(1, &tboId);
+    glGenTextures(1, &textureId);
+
+    glBindBuffer(GL_TEXTURE_BUFFER, tboId);
+    glBufferData(GL_TEXTURE_BUFFER, size, data, GL_DYNAMIC_DRAW);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_BUFFER, textureId);
+    glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, tboId);
+}
+
+TextureBuffer::~TextureBuffer() {
+}

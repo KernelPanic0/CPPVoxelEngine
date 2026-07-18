@@ -4,8 +4,7 @@ layout (location = 1) in vec2 aTextureCoord;
 layout (location = 2) in vec3 aNormal;
 
 // Instanced attributes
-layout (location = 3) in float[48] aShadeLevel;
-layout (location = 4) in mat4 aInstanceModelMatrix;
+layout (location = 3) in mat4 aInstanceModelMatrix;
 
 // uniform mat4 model;
 uniform mat4 view;
@@ -23,10 +22,6 @@ void main()
     Pos = aPos;
     FragWorldPos = vec3(aInstanceModelMatrix * vec4(aPos, 1.0));
     TextureCoord = aTextureCoord;
-    ShadeLevel = aShadeLevel;
+    ShadeLevel = 1;
     Normal = aNormal;
-}
-
-int posToShadeLevel() {
-
 }

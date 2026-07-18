@@ -63,25 +63,17 @@ Renderable GraphicsManager::CreateRenderable(const Object &object) {
     }
 
     // insert instanced attributes
-    offset = 0;
     instanceVbo->Bind();
 
-    glVertexAttribPointer(3, object.attributes[3].size, GL_FLOAT, GL_FALSE, sizeof(glm::mat4) + sizeof(float) * 48, (const GLvoid *)0);
-    glEnableVertexAttribArray(3);
-    glVertexAttribDivisor(3, 1);
-
-    offset += object.attributes[3].size * object.attributes[3].typeSize;
-
     for (int i = 0; i < 4; i++) {
-        glVertexAttribPointer(4 + i,
+        glVertexAttribPointer(3 + i,
                               4,
                               GL_FLOAT,
                               GL_FALSE,
-                              sizeof(glm::mat4) + sizeof(float) * 48,
-                              (const GLvoid *)offset); // offset per column
-        glEnableVertexAttribArray(4 + i);
-        glVertexAttribDivisor(4 + i, 1);
-        offset += object.attributes[4 + i].size * object.attributes[4 + i].typeSize;
+                              sizeof(glm::mat4),
+                              (const GLvoid *)(i * sizeof(glm::vec4))); // offset per column
+        glEnableVertexAttribArray(3 + i);
+        glVertexAttribDivisor(3 + i, 1);
     }
 
     // generate texture (if any)
@@ -109,37 +101,22 @@ void GraphicsManager::ClearRenderCache() {
 void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objects) {
     objectsToRender = objects;
     instanceCounts.clear();
-    // this data structure will need to be rethinked.
-    std::unordered_map<int, std::pair<std::vector<float>, std::vector<glm::mat4>>> instancedData; // a list of each shading value AND instanced position for each unique object
 
+    std::unordered_map<int, std::vector<glm::mat4>> groupedModelMatrices;
     for (const auto &obj : objectsToRender) {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(obj.position));
-        instancedData[obj.id].second.push_back(model);
-
-        for (const auto &[cornerMapping, shadingValue] : obj.vs) {
-            instancedData[obj.id].first.push_back(shadingValue);
-        }
+        groupedModelMatrices[obj.id].push_back(model);
     }
 
-    for (auto &[id, matShadePair] : instancedData) {
+    for (auto &[id, matrices] : groupedModelMatrices) {
         auto renderableIt = objectMap.find(id);
         if (renderableIt == objectMap.end()) {
             continue;
         }
 
         renderableIt->second.instanceVbo->Bind();
-
-        std::vector<float> data = std::move(matShadePair.first);
-        size_t shadeFloatCount = data.size();
-        size_t matFloatCount = matShadePair.second.size() * 16;
-        data.reserve(shadeFloatCount + matFloatCount);
-
-        const float *matDataStart = reinterpret_cast<const float *>(matShadePair.second.data());
-        data.insert(data.end(), matDataStart, matDataStart + matFloatCount);
-
-        // data.push_back(objectsToRender[id].vs)
-        renderableIt->second.instanceVbo->Buffer(data.data(), static_cast<GLsizeiptr>(matFloatCount * sizeof(float) + shadeFloatCount * sizeof(float)));
-        instanceCounts[id] = static_cast<GLsizei>(matFloatCount);
+        renderableIt->second.instanceVbo->Buffer(glm::value_ptr(matrices[0]), static_cast<GLsizeiptr>(matrices.size() * sizeof(glm::mat4)));
+        instanceCounts[id] = static_cast<GLsizei>(matrices.size());
     }
 }
 

@@ -47,3 +47,13 @@ class FrameBuffer {
     void Unbind() const;
     ~FrameBuffer();
 };
+
+class TextureBuffer {
+  public:
+    GLuint tboId;
+    GLuint textureId;
+    TextureBuffer(GLfloat *data, GLsizeiptr size);
+    void Bind() const;
+    void Unbind() const;
+    ~TextureBuffer();
+};
