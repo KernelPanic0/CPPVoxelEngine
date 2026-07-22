@@ -91,10 +91,12 @@ FrameBuffer::~FrameBuffer() {
     glDeleteBuffers(1, &id);
 }
 
-TextureBuffer::TextureBuffer(GLfloat *data, GLsizeiptr size) {
+TextureBuffer::TextureBuffer() {
     glGenBuffers(1, &tboId);
     glGenTextures(1, &textureId);
+}
 
+void TextureBuffer::Buffer(GLfloat *data, GLsizeiptr size) const {
     glBindBuffer(GL_TEXTURE_BUFFER, tboId);
     glBufferData(GL_TEXTURE_BUFFER, size, data, GL_DYNAMIC_DRAW);
 
@@ -103,5 +105,12 @@ TextureBuffer::TextureBuffer(GLfloat *data, GLsizeiptr size) {
     glTexBuffer(GL_TEXTURE_BUFFER, GL_R32F, tboId);
 }
 
+void TextureBuffer::Bind() const {
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_BUFFER, textureId);
+}
+
 TextureBuffer::~TextureBuffer() {
+    glDeleteBuffers(1, &tboId);
+    glDeleteTextures(1, &textureId);
 }

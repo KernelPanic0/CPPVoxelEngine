@@ -13,7 +13,7 @@
 
 struct RawObject {
     glm::vec3 position;
-    VertexShadingMap vs;
+    std::vector<float> shadingData;
     int id;
 };
 

@@ -1,8 +1,7 @@
 #include "GraphicsManager.hpp"
-GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400)) {
-    shader =
-        std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader_instanced.vert",
-                                 "./src/Engine/Graphics/Shaders/shader.frag");
+GraphicsManager::GraphicsManager() : fbo(FrameBuffer(800, 400)), tbo(TextureBuffer()) {
+    shader = std::make_unique<Shader>("./src/Engine/Graphics/Shaders/shader_instanced.vert",
+                                      "./src/Engine/Graphics/Shaders/shader.frag");
     lightShader = std::make_unique<Shader>(
         "./src/Engine/Graphics/Shaders/shader_water.vert",
         "./src/Engine/Graphics/Shaders/shader_water.frag");
@@ -106,6 +105,10 @@ void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objec
     for (const auto &obj : objectsToRender) {
         glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(obj.position));
         groupedModelMatrices[obj.id].push_back(model);
+
+        for (float shade : obj.shadingData) {
+            aoData.push_back(shade);
+        }
     }
 
     for (auto &[id, matrices] : groupedModelMatrices) {
@@ -113,6 +116,8 @@ void GraphicsManager::AddObjectsForRendering(const std::vector<RawObject> &objec
         if (renderableIt == objectMap.end()) {
             continue;
         }
+
+        tbo.Buffer(aoData.data(), aoData.size() * sizeof(float));
 
         renderableIt->second.instanceVbo->Bind();
         renderableIt->second.instanceVbo->Buffer(glm::value_ptr(matrices[0]), static_cast<GLsizeiptr>(matrices.size() * sizeof(glm::mat4)));
@@ -136,6 +141,7 @@ void GraphicsManager::RenderObjects(
     shader->setMat4("projection", viewProjection.second);
     shader->setMat4("view", viewProjection.first);
     shader->setVec3("camPos", cameraPos);
+    shader->setInt("aoData", 1);
 
     for (auto const &[id, renderableObj] : objectMap) {
         auto countIt = instanceCounts.find(id);
@@ -146,10 +152,13 @@ void GraphicsManager::RenderObjects(
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, renderableObj.textureId);
 
+        tbo.Bind();
+
         renderableObj.vao->Bind();
         renderableObj.vbo->Bind();
         renderableObj.ebo->Bind();
-        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(renderableObj.object.mesh.indices.size()), GL_UNSIGNED_INT, (const void *)0, countIt->second);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, renderableObj.object.mesh.indices.size(), countIt->second);
+        // glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(renderableObj.object.mesh.indices.size()), GL_UNSIGNED_INT, (const void *)0, countIt->second);
     }
 
     // render model viewer thingy, currently broken

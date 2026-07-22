@@ -27,6 +27,8 @@ class GraphicsManager {
     std::unordered_map<int, Renderable> objectMap;     // maps RawObject id to OpenGL Object (Renderable)
     std::unordered_map<int, GLsizei> instanceCounts;   // number of instances per renderable id
     std::vector<RawObject> objectsToRender;
+    std::vector<float> aoData;
+    TextureBuffer tbo;
 
     unsigned int GenerateTexture(std::string path);
     Renderable CreateRenderable(const Object &object);

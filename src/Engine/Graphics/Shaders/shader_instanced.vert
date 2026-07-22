@@ -9,6 +9,7 @@ layout (location = 3) in mat4 aInstanceModelMatrix;
 // uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform samplerBuffer aoData;
 
 out vec3 Normal;
 out vec2 TextureCoord;
@@ -22,6 +23,6 @@ void main()
     Pos = aPos;
     FragWorldPos = vec3(aInstanceModelMatrix * vec4(aPos, 1.0));
     TextureCoord = aTextureCoord;
-    ShadeLevel = 1;
+    ShadeLevel = texelFetch(aoData, gl_InstanceID * 72 + gl_VertexID).r;
     Normal = aNormal;
 }

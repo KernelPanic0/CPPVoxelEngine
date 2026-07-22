@@ -222,3 +222,42 @@ void Cube::ApplyShadingMap(VertexShadingMap &sm, glm::vec3 position) {
     if (dy == -1)
         sm[{1, Face::PosY}] = 1;
 }
+
+std::vector<float> Cube::ShadingMapToFlatArray(const VertexShadingMap &sm) {
+    std::vector<float> result(72, 0.0f);
+
+    // 1. Populate all outer corner vertices
+    for (int i = 0; i < 72; i++) {
+        if (vertexDescs[i].corner == -1)
+            continue;
+
+        auto it = sm.find({vertexDescs[i].corner, vertexDescs[i].face});
+        result[i] = (it != sm.end()) ? static_cast<float>(it->second) : 0.0f;
+    }
+
+    // 2. Calculate center vertex values for each face (6 faces x 12 vertices)
+    for (int faceIdx = 0; faceIdx < 6; faceIdx++) {
+        int base = faceIdx * 12;
+
+        float cornerSum = 0.0f;
+        for (int i = 0; i < 12; i++) {
+            int idx = base + i;
+            if (vertexDescs[idx].corner != -1) {
+                cornerSum += result[idx];
+            }
+        }
+
+        // Each face contains 4 corners, with each corner appearing twice across the 12 vertices.
+        // Summing the 8 corner vertices and dividing by 8 gives the exact 4-corner average.
+        float centerShade = cornerSum / 8.0f;
+
+        for (int i = 0; i < 12; i++) {
+            int idx = base + i;
+            if (vertexDescs[idx].corner == -1) {
+                result[idx] = centerShade;
+            }
+        }
+    }
+
+    return result;
+}

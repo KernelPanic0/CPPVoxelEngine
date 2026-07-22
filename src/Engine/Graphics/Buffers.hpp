@@ -52,8 +52,10 @@ class TextureBuffer {
   public:
     GLuint tboId;
     GLuint textureId;
+    TextureBuffer();
     TextureBuffer(GLfloat *data, GLsizeiptr size);
     void Bind() const;
     void Unbind() const;
+    void Buffer(GLfloat *data, GLsizeiptr size) const;
     ~TextureBuffer();
 };
